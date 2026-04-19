@@ -1,0 +1,52 @@
+2026-04-17 21:50:13,329 - INFO - Batch 1 started
+2026-04-17 21:50:13,432 - INFO - Opening: https://example.com/page3
+2026-04-17 21:50:13,460 - INFO - Opening: https://example.com/page1
+2026-04-17 21:50:13,461 - INFO - Opening: https://example.com
+2026-04-17 21:50:17,312 - INFO - Success: https://example.com
+2026-04-17 21:50:17,314 - INFO - Success: https://example.com/page1
+2026-04-17 21:50:17,316 - INFO - Success: https://example.com/page3
+2026-04-17 21:50:17,404 - INFO - Opening: https://example.com/page4
+2026-04-17 21:50:17,413 - INFO - Opening: https://example.com/page2
+2026-04-17 21:50:17,865 - INFO - Success: https://example.com/page2
+2026-04-17 21:50:17,867 - INFO - Success: https://example.com/page4
+2026-04-17 21:50:17,872 - INFO - Batch 2 started
+2026-04-17 21:50:17,957 - INFO - Opening: https://example.com/page5
+2026-04-17 21:50:17,976 - INFO - Opening: https://example.com/page6
+2026-04-17 21:50:18,448 - INFO - Success: https://example.com/page5
+2026-04-17 21:50:18,467 - INFO - Success: https://example.com/page6
+2026-04-17 21:53:42,871 - INFO - Batch 1 started
+2026-04-17 21:53:43,059 - INFO - Opening: https://www.livelaw.in/high-court/karnataka-high-court
+2026-04-17 21:53:43,063 - INFO - Opening: https://www.livelaw.in/news-updates
+2026-04-17 21:53:43,094 - INFO - Opening: https://www.livelaw.in/high-court
+2026-04-17 21:53:44,710 - INFO - Success: https://www.livelaw.in/news-updates
+2026-04-17 21:53:44,776 - INFO - Success: https://www.livelaw.in/high-court
+2026-04-17 21:53:44,803 - INFO - Opening: https://www.livelaw.in/top-stories
+2026-04-17 21:53:44,843 - INFO - Success: https://www.livelaw.in/high-court/karnataka-high-court
+2026-04-17 21:53:44,863 - INFO - Opening: https://www.livelaw.in/supreme-court
+2026-04-17 21:53:45,406 - INFO - Success: https://www.livelaw.in/top-stories
+2026-04-17 21:53:45,625 - INFO - Success: https://www.livelaw.in/supreme-court
+2026-04-17 21:53:45,631 - INFO - Batch 2 started
+2026-04-17 21:53:45,713 - INFO - Opening: https://www.livelaw.in/articles
+2026-04-17 21:53:45,730 - INFO - Opening: https://www.livelaw.in/round-ups
+2026-04-17 21:53:45,745 - INFO - Opening: https://www.livelaw.in/book-reviews
+2026-04-17 21:53:46,303 - INFO - Success: https://www.livelaw.in/book-reviews
+2026-04-17 21:53:46,348 - INFO - Success: https://www.livelaw.in/articles
+2026-04-17 21:53:46,410 - INFO - Opening: https://www.livelaw.in/consumer-cases
+2026-04-17 21:53:46,424 - INFO - Opening: https://www.livelaw.in/digests
+2026-04-17 21:53:46,476 - INFO - Success: https://www.livelaw.in/round-ups
+2026-04-17 21:53:46,867 - INFO - Success: https://www.livelaw.in/consumer-cases
+2026-04-17 21:53:47,055 - INFO - Success: https://www.livelaw.in/digests
+2026-04-17 21:53:47,060 - INFO - Batch 3 started
+2026-04-17 21:53:47,140 - INFO - Opening: https://www.livelaw.in/labour-service
+2026-04-17 21:53:47,160 - INFO - Opening: https://www.livelaw.in/ibc-cases
+2026-04-17 21:53:47,172 - INFO - Opening: https://www.livelaw.in/arbitration-cases
+2026-04-17 21:53:47,691 - INFO - Success: https://www.livelaw.in/ibc-cases
+2026-04-17 21:53:47,703 - INFO - Success: https://www.livelaw.in/labour-service
+2026-04-17 21:53:47,712 - INFO - Success: https://www.livelaw.in/arbitration-cases
+2026-04-17 21:53:47,763 - INFO - Opening: https://www.livelaw.in/more/international
+2026-04-17 21:53:47,794 - INFO - Opening: https://www.livelaw.in/tech-law
+2026-04-17 21:53:48,553 - INFO - Success: https://www.livelaw.in/more/international
+2026-04-17 21:53:48,558 - INFO - Success: https://www.livelaw.in/tech-law
+2026-04-17 21:53:48,565 - INFO - Batch 4 started
+2026-04-17 21:53:48,628 - INFO - Opening: https://www.livelaw.in/corporate-law
+2026-04-17 21:53:48,966 - INFO - Success: https://www.livelaw.in/corporate-law
