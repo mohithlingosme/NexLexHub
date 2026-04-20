@@ -2,45 +2,79 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import time
+import random
 
 BASE = "https://indiankanoon.org"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
-SLEEP = 2
+START_YEAR = 1949
+END_YEAR = 2026
+
+SLEEP_MIN = 2
+SLEEP_MAX = 4
 
 
-# =========================
-# CREATE FOLDER
-# =========================
+COURTS = {
+    "karnataka_high_court": "Karnataka High Court",
+    "madras_high_court": "Madras High Court",
+    "delhi_high_court": "Delhi High Court",
+    "bombay_high_court": "Bombay High Court",
+    "calcutta_high_court": "Calcutta High Court"
+}
+
+
 def create_path(court, year):
-    base = "Judicial Precedent"
-
-    if "Supreme Court" in court:
-        path = f"{base}/Supreme Court/{year}"
-    elif "Privy" in court:
-        path = f"{base}/Privy Council/{year}"
-    else:
-        path = f"{base}/High Courts/{court}/{year}"
-
+    base = "Judicial Precedent/High Courts"
+    path = f"{base}/{court}/{year}"
     os.makedirs(path, exist_ok=True)
     return path
 
 
-# =========================
-# GET PDF
-# =========================
-def download_pdf(session, url):
-    res = session.get(url, headers=HEADERS)
+def clean_filename(name):
+    return "".join(c for c in name if c.isalnum() or c in " _-")[:120]
+
+
+def safe_get(session, url):
+    for i in range(3):
+        try:
+            return session.get(url, headers=HEADERS, timeout=15)
+        except:
+            time.sleep(2)
+    return None
+
+
+def get_links(session, court_key, year, page):
+    url = f"{BASE}/search/?formInput=doctypes:{court_key} year:{year}&pagenum={page}"
+
+    print("🔍", url)
+
+    res = safe_get(session, url)
+    if not res:
+        return []
+
     soup = BeautifulSoup(res.text, "html.parser")
 
-    # Extract CSRF token
+    links = []
+    for a in soup.find_all("a", href=True):
+        if "/doc/" in a["href"]:
+            links.append(BASE + a["href"])
+
+    return list(set(links))
+
+
+def download_pdf(session, url):
+    res = safe_get(session, url)
+    if not res:
+        return None, None, None
+
+    soup = BeautifulSoup(res.text, "html.parser")
+
     token = soup.find("input", {"name": "csrfmiddlewaretoken"})
     if not token:
         return None, None, None
 
     csrf = token["value"]
 
-    # Extract metadata
     try:
         title = soup.find("h2", class_="doc_title").text.strip()
     except:
@@ -51,18 +85,18 @@ def download_pdf(session, url):
     except:
         court = "Unknown Court"
 
-    # POST request to get PDF
-    pdf_res = session.post(
-        url,
-        data={
-            "type": "pdf",
-            "csrfmiddlewaretoken": csrf
-        },
-        headers={
-            **HEADERS,
-            "Referer": url
-        }
-    )
+    try:
+        pdf_res = session.post(
+            url,
+            data={
+                "type": "pdf",
+                "csrfmiddlewaretoken": csrf
+            },
+            headers={**HEADERS, "Referer": url},
+            timeout=20
+        )
+    except:
+        return None, None, None
 
     if "application/pdf" not in pdf_res.headers.get("Content-Type", ""):
         return None, None, None
@@ -70,72 +104,59 @@ def download_pdf(session, url):
     return title, court, pdf_res.content
 
 
-# =========================
-# CLEAN FILE NAME
-# =========================
-def clean_filename(name):
-    return "".join(c for c in name if c.isalnum() or c in " _-")[:100]
-
-
-# =========================
-# GET CASE LINKS
-# =========================
-def get_links(year, page):
-    url = f"{BASE}/search/?formInput=doctypes:karnataka year:{year}&pagenum={page}"
-
-    res = requests.get(url, headers=HEADERS)
-    soup = BeautifulSoup(res.text, "html.parser")
-
-    links = []
-
-    for a in soup.find_all("a", href=True):
-        if "/doc/" in a["href"]:
-            links.append(BASE + a["href"])
-
-    return list(set(links))
-
-
-# =========================
-# MAIN
-# =========================
 def main():
     session = requests.Session()
 
-    year = 1949
+    total = 0
 
-    for page in range(0, 3):  # limit
-        print(f"\n📄 Page {page}")
+    for court_key, court_name in COURTS.items():
+        print(f"\n🏛️ {court_name}")
 
-        links = get_links(year, page)
+        for year in range(START_YEAR, END_YEAR + 1):
+            print(f"\n📅 {year}")
 
-        if not links:
-            break
+            empty_pages = 0
 
-        for link in links:
-            try:
-                title, court, pdf = download_pdf(session, link)
+            for page in range(0, 100):
+                print(f"📄 Page {page}")
 
-                if not pdf:
-                    print("❌ PDF failed")
+                links = get_links(session, court_key, year, page)
+
+                if not links:
+                    empty_pages += 1
+                    if empty_pages >= 3:
+                        break
                     continue
 
-                folder = create_path(court, year)
+                empty_pages = 0
 
-                filename = clean_filename(title) + ".pdf"
-                filepath = os.path.join(folder, filename)
+                for link in links:
+                    try:
+                        title, court, pdf = download_pdf(session, link)
 
-                if os.path.exists(filepath):
-                    continue
+                        if not pdf:
+                            continue
 
-                with open(filepath, "wb") as f:
-                    f.write(pdf)
+                        folder = create_path(court_name, year)
 
-                print("✅ Saved:", filename)
+                        filename = clean_filename(title) + ".pdf"
+                        filepath = os.path.join(folder, filename)
 
-            except Exception as e:
-                print("❌ Error:", e)
+                        if os.path.exists(filepath):
+                            continue
 
-            time.sleep(SLEEP)
+                        with open(filepath, "wb") as f:
+                            f.write(pdf)
+
+                        total += 1
+                        print("✅", total, filename[:80])
+
+                    except:
+                        continue
+
+                    time.sleep(random.uniform(SLEEP_MIN, SLEEP_MAX))
+
+    print("\n🎉 TOTAL:", total)
 
 
 if __name__ == "__main__":
