@@ -1,0 +1,12 @@
+playwright
+beautifulsoup4
+requests
+lxml
+hashlib
+json
+asyncio
+urllib.parse
+bs4
+pytest
+logging
+
