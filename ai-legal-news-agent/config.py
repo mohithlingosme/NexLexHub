@@ -4,6 +4,40 @@ import os
 from dataclasses import dataclass
 
 
+def _env_int(name: str, default: int, *, min_value: int | None = None, max_value: int | None = None) -> int:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        value = default
+    else:
+        try:
+            value = int(raw.strip())
+        except ValueError:
+            value = default
+
+    if min_value is not None:
+        value = max(min_value, value)
+    if max_value is not None:
+        value = min(max_value, value)
+    return value
+
+
+def _env_float(name: str, default: float, *, min_value: float | None = None, max_value: float | None = None) -> float:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        value = default
+    else:
+        try:
+            value = float(raw.strip())
+        except ValueError:
+            value = default
+
+    if min_value is not None:
+        value = max(min_value, value)
+    if max_value is not None:
+        value = min(max_value, value)
+    return value
+
+
 @dataclass(frozen=True)
 class Paths:
     raw_articles: str = "data/raw/articles.json"
@@ -36,13 +70,13 @@ class OllamaConfig:
 
 @dataclass(frozen=True)
 class ScraperConfig:
-    max_pages: int = int(os.getenv("SCRAPER_MAX_PAGES") or 10)
-    concurrency: int = 6
-    retries: int = 3
-    base_delay_s: float = 1.5
-    navigation_timeout_ms: int = 60_000
-    page_settle_ms: int = 600
-    polite_delay_s: float = 1.2
+    max_pages: int = _env_int("SCRAPER_MAX_PAGES", 10, min_value=1, max_value=200)
+    concurrency: int = _env_int("SCRAPER_CONCURRENCY", 6, min_value=1, max_value=32)
+    retries: int = _env_int("SCRAPER_RETRIES", 3, min_value=1, max_value=10)
+    base_delay_s: float = _env_float("SCRAPER_BASE_DELAY_S", 1.5, min_value=0.1, max_value=60.0)
+    navigation_timeout_ms: int = _env_int("SCRAPER_NAV_TIMEOUT_MS", 60_000, min_value=5_000, max_value=300_000)
+    page_settle_ms: int = _env_int("SCRAPER_PAGE_SETTLE_MS", 600, min_value=0, max_value=10_000)
+    polite_delay_s: float = _env_float("SCRAPER_POLITE_DELAY_S", 1.2, min_value=0.0, max_value=10.0)
     user_agent: str = os.getenv(
         "SCRAPER_USER_AGENT",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Safari/537.36",

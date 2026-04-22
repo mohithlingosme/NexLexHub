@@ -255,7 +255,11 @@ async def scrape(
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context(user_agent=getattr(DEFAULT_CONFIG.scraper, "user_agent", None) or None)
+        ctx_kwargs: Dict[str, Any] = {}
+        ua = (getattr(DEFAULT_CONFIG.scraper, "user_agent", "") or "").strip()
+        if ua:
+            ctx_kwargs["user_agent"] = ua
+        context = await browser.new_context(**ctx_kwargs)
         context.set_default_navigation_timeout(DEFAULT_CONFIG.scraper.navigation_timeout_ms)
         context.set_default_timeout(DEFAULT_CONFIG.scraper.navigation_timeout_ms)
 

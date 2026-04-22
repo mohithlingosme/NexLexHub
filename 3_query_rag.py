@@ -13,7 +13,7 @@ def _ensure_agent_on_path() -> None:
 
 def main() -> int:
     _ensure_agent_on_path()
-    from ai.rag import answer_with_context, retrieve
+    from ai.rag import answer_with_context_meta, retrieve
 
     parser = argparse.ArgumentParser(description="Query RAG store (no LangChain/FAISS).")
     parser.add_argument("--k", type=int, default=4, help="Top-k contexts to retrieve")
@@ -28,13 +28,22 @@ def main() -> int:
             break
         if not query:
             continue
-        ctx = retrieve(query, k=args.k)
-        ans = answer_with_context(query, ctx)
+        try:
+            ctx = retrieve(query, k=args.k)
+        except FileNotFoundError:
+            print("Vector store not found. Run `python 2_embed_store.py` (or `python ai-legal-news-agent/main.py embed`).")
+            continue
+        except Exception as exc:
+            print(f"Retrieve failed: {exc}")
+            continue
+
+        ans, used_ollama = answer_with_context_meta(query, ctx)
         print("\nAnswer:\n", ans)
+        if not used_ollama:
+            print("\n(note) Ollama not reachable; showing excerpts-only output.")
 
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
