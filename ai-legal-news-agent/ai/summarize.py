@@ -6,16 +6,19 @@ from typing import Any, Dict, List, Optional
 import requests
 from tqdm import tqdm
 
+from config import DEFAULT_CONFIG
+from utils.http_utils import get_with_retries, post_json_with_retries
 from utils.file_utils import get_hash, is_valid, load_json, normalize_text, save_json
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_INPUT_FILE = "data/processed/deduplicated_articles.json"
-FALLBACK_INPUT_FILE = "data/processed/clean_articles.json"
-DEFAULT_OUTPUT_FILE = "data/processed/processed_articles.json"
+DEFAULT_INPUT_FILE = DEFAULT_CONFIG.paths.dedup_articles
+FALLBACK_INPUT_FILE = DEFAULT_CONFIG.paths.clean_articles
+DEFAULT_OUTPUT_FILE = DEFAULT_CONFIG.paths.processed_articles
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "llama3"
+OLLAMA_URL = DEFAULT_CONFIG.ollama.generate_url
+OLLAMA_TAGS_URL = DEFAULT_CONFIG.ollama.tags_url
+MODEL = DEFAULT_CONFIG.ollama.summarize_model
 
 MAX_WORKERS = 3
 SAVE_EVERY = 20
@@ -53,14 +56,14 @@ def _extract_json(text: str) -> Optional[Dict[str, Any]]:
 
 
 def _call_ollama_http(prompt: str) -> str:
-    res = requests.post(
+    data = post_json_with_retries(
         OLLAMA_URL,
-        json={"model": MODEL, "prompt": prompt, "stream": False},
-        timeout=120,
+        {"model": MODEL, "prompt": prompt, "stream": False},
+        timeout_s=120,
+        retries=2,
+        base_delay_s=1.2,
     )
-    res.raise_for_status()
-    data = res.json()
-    return data.get("response", "") if isinstance(data, dict) else ""
+    return str(data.get("response", "") or "")
 
 
 def _call_ollama(prompt: str) -> str:
@@ -86,11 +89,8 @@ def _ollama_available() -> bool:
         resp = ollama.list()
         return isinstance(resp, dict) or isinstance(resp, list)
     except Exception:
-        try:
-            res = requests.get("http://localhost:11434/api/tags", timeout=2)
-            return res.status_code == 200
-        except Exception:
-            return False
+        res = get_with_retries(OLLAMA_TAGS_URL, timeout_s=2, retries=1)
+        return bool(res is not None and res.status_code == 200)
 
 
 def _summarize_fallback(article: Dict[str, Any]) -> Dict[str, Any]:
@@ -109,6 +109,7 @@ def _summarize_fallback(article: Dict[str, Any]) -> Dict[str, Any]:
 def process_article(article: Dict[str, Any], *, use_ollama: bool) -> Dict[str, Any]:
     prompt = _build_prompt(article)
     parsed: Optional[Dict[str, Any]] = None
+    source_hash = get_hash(article)
 
     if use_ollama:
         try:
@@ -123,6 +124,7 @@ def process_article(article: Dict[str, Any], *, use_ollama: bool) -> Dict[str, A
         "title": normalize_text(article.get("title", "")),
         "date": normalize_text(article.get("date", "")),
         "url": normalize_text(article.get("url", "")),
+        "source_hash": source_hash,
         "ai_summary": ai_summary,
     }
 
@@ -138,17 +140,24 @@ def summarize_articles(
 
     articles = [a for a in articles if isinstance(a, dict) and is_valid(a, min_chars=200)]
 
-    # Resume support: skip already processed URLs/hashes.
+    # Resume support: skip already processed URLs (preferred) or source_hashes.
     existing = load_json(output_file, default=[])
-    done_hashes = {get_hash(x) for x in existing if isinstance(x, dict)}
+    done_urls = {normalize_text(x.get("url", "")) for x in existing if isinstance(x, dict) and x.get("url")}
+    done_hashes = {normalize_text(x.get("source_hash", "")) for x in existing if isinstance(x, dict) and x.get("source_hash")}
 
     unique: List[Dict[str, Any]] = []
     seen = set()
     for a in articles:
-        h = get_hash(a)
-        if h in seen or h in done_hashes:
-            continue
-        seen.add(h)
+        url = normalize_text(a.get("url", ""))
+        src_hash = get_hash(a)
+        if url:
+            if url in seen or url in done_urls:
+                continue
+            seen.add(url)
+        else:
+            if src_hash in seen or src_hash in done_hashes:
+                continue
+            seen.add(src_hash)
         unique.append(a)
 
     processed: List[Dict[str, Any]] = list(existing) if isinstance(existing, list) else []

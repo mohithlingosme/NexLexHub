@@ -8,6 +8,7 @@ from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
+from config import DEFAULT_CONFIG
 from utils.date_parser import parse_date
 from utils.file_utils import load_json, normalize_text, save_json
 
@@ -32,8 +33,8 @@ CATEGORY_URLS = [
     "https://www.livelaw.in/corporate-law",
 ]
 
-DEFAULT_MAX_PAGES = 10
-DEFAULT_OUT_FILE = "data/raw/articles.json"
+DEFAULT_MAX_PAGES = DEFAULT_CONFIG.scraper.max_pages
+DEFAULT_OUT_FILE = DEFAULT_CONFIG.paths.raw_articles
 
 _ARTICLE_ID_RE = re.compile(r"-\d+$")
 
@@ -72,7 +73,12 @@ def _is_valid_article_url(url: str) -> bool:
     return bool(_ARTICLE_ID_RE.search(parsed.path))
 
 
-async def _with_retries(coro_factory, *, retries: int = 3, base_delay_s: float = 1.5):
+async def _with_retries(
+    coro_factory,
+    *,
+    retries: int = DEFAULT_CONFIG.scraper.retries,
+    base_delay_s: float = DEFAULT_CONFIG.scraper.base_delay_s,
+):
     last_exc: Optional[BaseException] = None
     for attempt in range(retries):
         try:
@@ -185,8 +191,14 @@ def _extract_date(soup: BeautifulSoup, jsonld: Dict[str, Any]) -> str:
 async def _scrape_article(context: Any, url: str, category: str) -> Optional[Dict[str, Any]]:
     page = await context.new_page()
     try:
-        await _with_retries(lambda: page.goto(url, timeout=60_000, wait_until="domcontentloaded"))
-        await page.wait_for_timeout(600)  # let late JS settle
+        await _with_retries(
+            lambda: page.goto(
+                url,
+                timeout=DEFAULT_CONFIG.scraper.navigation_timeout_ms,
+                wait_until="domcontentloaded",
+            )
+        )
+        await page.wait_for_timeout(DEFAULT_CONFIG.scraper.page_settle_ms)  # let late JS settle
 
         html = await page.content()
         soup = BeautifulSoup(html, "lxml")
@@ -219,7 +231,7 @@ async def scrape(
     categories: Optional[Iterable[str]] = None,
     max_pages: int = DEFAULT_MAX_PAGES,
     out_file: str = DEFAULT_OUT_FILE,
-    concurrency: int = 6,
+    concurrency: int = DEFAULT_CONFIG.scraper.concurrency,
 ) -> List[Dict[str, Any]]:
     _, _, _, async_playwright = _require_playwright()
     categories = list(categories) if categories is not None else list(CATEGORY_URLS)
@@ -236,6 +248,23 @@ async def scrape(
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         context = await browser.new_context()
+        context.set_default_navigation_timeout(DEFAULT_CONFIG.scraper.navigation_timeout_ms)
+        context.set_default_timeout(DEFAULT_CONFIG.scraper.navigation_timeout_ms)
+
+        # Speed/reliability: block non-essential heavy resources.
+        async def _route(route, request):
+            try:
+                if request.resource_type in ("image", "media", "font"):
+                    await route.abort()
+                else:
+                    await route.continue_()
+            except Exception:
+                try:
+                    await route.continue_()
+                except Exception:
+                    pass
+
+        await context.route("**/*", _route)
         page = await context.new_page()
 
         try:
@@ -246,7 +275,13 @@ async def scrape(
                 for i in range(1, max_pages + 1):
                     listing_url = f"{category}?page={i}"
                     try:
-                        await _with_retries(lambda: page.goto(listing_url, timeout=60_000, wait_until="domcontentloaded"))
+                        await _with_retries(
+                            lambda: page.goto(
+                                listing_url,
+                                timeout=DEFAULT_CONFIG.scraper.navigation_timeout_ms,
+                                wait_until="domcontentloaded",
+                            )
+                        )
                     except Exception as exc:
                         logger.warning("Listing page failed: %s (%s)", listing_url, str(exc))
                         continue
@@ -269,7 +304,7 @@ async def scrape(
                     all_articles.sort(key=lambda x: parse_date(x.get("date", "")), reverse=True)
                     save_json(all_articles, out_file)
 
-                    await asyncio.sleep(1.2)  # polite pacing
+                    await asyncio.sleep(DEFAULT_CONFIG.scraper.polite_delay_s)  # polite pacing
 
             all_articles.sort(key=lambda x: parse_date(x.get("date", "")), reverse=True)
             save_json(all_articles, out_file)

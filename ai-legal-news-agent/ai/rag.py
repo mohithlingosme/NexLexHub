@@ -1,39 +1,20 @@
-import hashlib
 import logging
-import math
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 
+from config import DEFAULT_CONFIG
+from utils.http_utils import post_json_with_retries
 from utils.file_utils import load_json, normalize_text
+from utils.vector_utils import cosine, hash_embed
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_STORE_FILE = "data/processed/vector_store.json"
+DEFAULT_STORE_FILE = DEFAULT_CONFIG.paths.vector_store
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "llama3"
-
-
-def _cosine(a: Sequence[float], b: Sequence[float]) -> float:
-    dot = 0.0
-    na = 0.0
-    nb = 0.0
-    for x, y in zip(a, b):
-        dot += x * y
-        na += x * x
-        nb += y * y
-    den = math.sqrt(na) * math.sqrt(nb)
-    return dot / den if den else 0.0
-
-
-def _hash_embed(text: str, *, dim: int = 256) -> List[float]:
-    counts = [0.0] * dim
-    for tok in normalize_text(text).lower().split():
-        h = int(hashlib.sha256(tok.encode("utf-8")).hexdigest(), 16)
-        counts[h % dim] += 1.0
-    norm = math.sqrt(sum(v * v for v in counts)) or 1.0
-    return [v / norm for v in counts]
+OLLAMA_URL = DEFAULT_CONFIG.ollama.generate_url
+OLLAMA_EMBED_URL = DEFAULT_CONFIG.ollama.embeddings_url
+MODEL = DEFAULT_CONFIG.ollama.summarize_model
 
 
 def _ollama_embed_query(text: str, *, model: str) -> Optional[List[float]]:
@@ -50,9 +31,13 @@ def _ollama_embed_query(text: str, *, model: str) -> Optional[List[float]]:
 
 def _ollama_embed_query_http(text: str, *, model: str) -> Optional[List[float]]:
     try:
-        res = requests.post("http://localhost:11434/api/embeddings", json={"model": model, "prompt": text}, timeout=120)
-        res.raise_for_status()
-        data = res.json()
+        data = post_json_with_retries(
+            OLLAMA_EMBED_URL,
+            {"model": model, "prompt": text},
+            timeout_s=120,
+            retries=2,
+            base_delay_s=1.2,
+        )
         emb = data.get("embedding") if isinstance(data, dict) else None
         if isinstance(emb, list) and emb:
             return [float(x) for x in emb]
@@ -75,12 +60,12 @@ def retrieve(
 
     q = normalize_text(query)
     qv: Optional[List[float]] = None
-    if isinstance(backend, str) and backend.startswith("ollama:"):
-        model = backend.split(":", 1)[1]
+    if isinstance(backend, str) and (backend.startswith("ollama:") or backend.startswith("ollama_http:")):
+        model = backend.split(":", 1)[1] if ":" in backend else DEFAULT_CONFIG.ollama.embed_model
         qv = _ollama_embed_query(q, model=model) or _ollama_embed_query_http(q, model=model)
 
     if qv is None:
-        qv = _hash_embed(q)
+        qv = hash_embed(q)
 
     scored: List[Tuple[float, Dict[str, Any]]] = []
     for it in items:
@@ -91,7 +76,7 @@ def retrieve(
         if not isinstance(meta, dict) or not isinstance(vec, list):
             continue
         try:
-            score = _cosine(qv, [float(x) for x in vec])
+            score = cosine(qv, [float(x) for x in vec])
         except Exception:
             continue
         scored.append((score, meta))
@@ -118,14 +103,14 @@ User question: {normalize_text(query)}
 """
 
     try:
-        res = requests.post(
+        data = post_json_with_retries(
             OLLAMA_URL,
-            json={"model": MODEL, "prompt": prompt, "stream": False},
-            timeout=120,
+            {"model": MODEL, "prompt": prompt, "stream": False},
+            timeout_s=120,
+            retries=2,
+            base_delay_s=1.2,
         )
-        res.raise_for_status()
-        data = res.json()
-        return normalize_text(data.get("response", "")) if isinstance(data, dict) else ""
+        return normalize_text(str(data.get("response", "") or ""))
     except Exception as exc:
         logger.warning("Ollama unavailable, returning retrieved excerpts only (%s)", str(exc))
         lines = []
@@ -143,4 +128,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -1,12 +1,13 @@
 import logging
 from typing import Any, Dict, List
 
+from config import DEFAULT_CONFIG
 from utils.file_utils import get_hash, load_json, save_json
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_INPUT_FILE = "data/processed/clean_articles.json"
-DEFAULT_OUTPUT_FILE = "data/processed/deduplicated_articles.json"
+DEFAULT_INPUT_FILE = DEFAULT_CONFIG.paths.clean_articles
+DEFAULT_OUTPUT_FILE = DEFAULT_CONFIG.paths.dedup_articles
 
 
 def deduplicate_articles(
