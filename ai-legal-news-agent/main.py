@@ -6,6 +6,8 @@ import os
 import sys
 from typing import Optional
 
+from config import DEFAULT_CONFIG
+
 logger = logging.getLogger("ai_legal_news_agent")
 
 
@@ -69,7 +71,12 @@ def main(argv: Optional[list[str]] = None) -> int:
         choices=["scrape", "clean", "dedup", "chunk", "summarize", "full", "all"],
         help="Pipeline step to run (use 'full' for end-to-end)",
     )
-    parser.add_argument("--max-pages", type=int, default=10, help="Max pages per category to scrape")
+    parser.add_argument(
+        "--max-pages",
+        type=int,
+        default=DEFAULT_CONFIG.scraper.max_pages,
+        help="Max pages per category to scrape",
+    )
     parser.add_argument(
         "--scrape-timeout-s",
         type=int,

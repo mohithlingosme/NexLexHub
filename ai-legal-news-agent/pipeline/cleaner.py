@@ -3,12 +3,13 @@ import re
 from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional
 
+from config import DEFAULT_CONFIG
 from utils.file_utils import load_json, normalize_text, save_json
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_INPUT_FILE = "data/raw/articles.json"
-DEFAULT_OUTPUT_FILE = "data/processed/clean_articles.json"
+DEFAULT_INPUT_FILE = DEFAULT_CONFIG.paths.raw_articles
+DEFAULT_OUTPUT_FILE = DEFAULT_CONFIG.paths.clean_articles
 
 _MCQ_RE = re.compile(r"\b(mcq|multiple\s+choice|question\s*\d+|quiz|exam)\b", re.IGNORECASE)
 _OPTION_RE = re.compile(r"(?:^|\n)\s*(?:[A-D]\)|\([A-D]\)|[A-D]\.)\s+\w+", re.IGNORECASE)

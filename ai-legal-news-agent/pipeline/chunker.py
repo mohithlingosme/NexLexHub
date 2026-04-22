@@ -1,16 +1,18 @@
 import logging
 from typing import Any, Dict, Iterable, List
 
-from utils.file_utils import hash_content, load_json, normalize_text, save_json
+from config import DEFAULT_CONFIG
+from utils.file_utils import hash_content, load_json, normalize_text, resolve_path, save_json
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_INPUT_FILE = "data/processed/deduplicated_articles.json"
-DEFAULT_OUTPUT_DIR = "data/chunks"
+DEFAULT_INPUT_FILE = DEFAULT_CONFIG.paths.dedup_articles
+DEFAULT_OUTPUT_DIR = DEFAULT_CONFIG.paths.chunks_dir
 
-DEFAULT_MAX_CHARS = 1200
-DEFAULT_OVERLAP = 150
-DEFAULT_CHUNKS_PER_FILE = 200
+DEFAULT_MAX_CHARS = DEFAULT_CONFIG.chunker.max_chars
+DEFAULT_OVERLAP = DEFAULT_CONFIG.chunker.overlap
+DEFAULT_CHUNKS_PER_FILE = DEFAULT_CONFIG.chunker.chunks_per_file
+DEFAULT_PURGE_EXISTING = DEFAULT_CONFIG.chunker.purge_existing
 
 
 def _chunk_text(text: str, max_chars: int, overlap: int) -> List[str]:
@@ -76,7 +78,17 @@ def save_chunks(
     chunks: List[Dict[str, Any]],
     output_dir: str = DEFAULT_OUTPUT_DIR,
     chunks_per_file: int = DEFAULT_CHUNKS_PER_FILE,
+    purge_existing: bool = DEFAULT_PURGE_EXISTING,
 ) -> List[str]:
+    if purge_existing:
+        out_dir = resolve_path(output_dir)
+        if out_dir.exists():
+            for p in out_dir.glob("chunk_*.json"):
+                try:
+                    p.unlink()
+                except Exception:
+                    logger.warning("Failed to delete old chunk file: %s", str(p))
+
     paths: List[str] = []
     file_index = 0
     batch: List[Dict[str, Any]] = []
@@ -104,10 +116,16 @@ def chunk_articles(
     max_chars: int = DEFAULT_MAX_CHARS,
     overlap: int = DEFAULT_OVERLAP,
     chunks_per_file: int = DEFAULT_CHUNKS_PER_FILE,
+    purge_existing: bool = DEFAULT_PURGE_EXISTING,
 ) -> List[str]:
     articles = load_json(input_file, default=[])
     chunks = build_chunks(articles, max_chars=max_chars, overlap=overlap)
-    paths = save_chunks(chunks, output_dir=output_dir, chunks_per_file=chunks_per_file)
+    paths = save_chunks(
+        chunks,
+        output_dir=output_dir,
+        chunks_per_file=chunks_per_file,
+        purge_existing=purge_existing,
+    )
     logger.info(
         "Chunked %d articles into %d chunks (%d files). Output dir: %s",
         len(articles) if isinstance(articles, list) else 0,

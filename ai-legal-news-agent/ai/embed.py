@@ -1,42 +1,33 @@
 import glob
-import hashlib
 import logging
-import math
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence
 
-import requests
 from tqdm import tqdm
 
+from config import DEFAULT_CONFIG
+from utils.http_utils import post_json_with_retries
 from utils.file_utils import load_json, normalize_text, resolve_path, save_json
+from utils.vector_utils import hash_embed
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_CHUNKS_GLOB = "data/chunks/chunk_*.json"
-DEFAULT_STORE_FILE = "data/processed/vector_store.json"
+DEFAULT_CHUNKS_GLOB = DEFAULT_CONFIG.paths.chunks_glob
+DEFAULT_STORE_FILE = DEFAULT_CONFIG.paths.vector_store
 
-OLLAMA_EMBED_URL = "http://localhost:11434/api/embeddings"
-DEFAULT_EMBED_MODEL = "nomic-embed-text"
-
-
-def _hash_embed(text: str, *, dim: int = 256) -> List[float]:
-    """
-    Dependency-free embedding fallback.
-    Produces a deterministic unit-length vector (not semantic, but stable).
-    """
-    counts = [0.0] * dim
-    for tok in normalize_text(text).lower().split():
-        h = int(hashlib.sha256(tok.encode("utf-8")).hexdigest(), 16)
-        counts[h % dim] += 1.0
-    norm = math.sqrt(sum(v * v for v in counts)) or 1.0
-    return [v / norm for v in counts]
+OLLAMA_EMBED_URL = DEFAULT_CONFIG.ollama.embeddings_url
+DEFAULT_EMBED_MODEL = DEFAULT_CONFIG.ollama.embed_model
 
 
 def _ollama_embed_http(texts: Sequence[str], *, model: str) -> List[List[float]]:
     out: List[List[float]] = []
     for t in texts:
-        res = requests.post(OLLAMA_EMBED_URL, json={"model": model, "prompt": t}, timeout=120)
-        res.raise_for_status()
-        data = res.json()
+        data = post_json_with_retries(
+            OLLAMA_EMBED_URL,
+            {"model": model, "prompt": t},
+            timeout_s=120,
+            retries=2,
+            base_delay_s=1.2,
+        )
         emb = data.get("embedding") if isinstance(data, dict) else None
         if not isinstance(emb, list) or not emb:
             raise RuntimeError("Unexpected Ollama embedding response")
@@ -119,7 +110,7 @@ def build_vector_store(
                 logger.warning("Ollama embeddings unavailable; falling back to hash embeddings (%s)", str(exc))
 
     if not vectors:
-        vectors = [_hash_embed(t) for t in tqdm(texts, desc="Embedding (hash)")]
+        vectors = [hash_embed(t) for t in tqdm(texts, desc="Embedding (hash)")]
 
     payload = {"backend": backend, "items": [{"meta": m, "vector": v} for m, v in zip(metas, vectors)]}
     save_json(payload, store_file)
@@ -134,4 +125,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
