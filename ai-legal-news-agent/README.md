@@ -24,12 +24,16 @@ ollama pull nomic-embed-text
 # End-to-end
 python main.py full
 
+# End-to-end + embeddings (builds `data/processed/vector_store.json`)
+python main.py full --with-embeddings
+
 # Step-by-step
 python main.py scrape --max-pages 10
 python main.py clean
 python main.py dedup
 python main.py chunk
 python main.py summarize
+python main.py embed
 ```
 
 ## Output
@@ -39,6 +43,7 @@ python main.py summarize
 - `data/processed/deduplicated_articles.json` — deduplicated articles
 - `data/chunks/chunk_*.json` — chunks for retrieval
 - `data/processed/processed_articles.json` — AI summaries
+- `data/processed/vector_store.json` — lightweight vector store for retrieval
 
 ## Embeddings + RAG (optional)
 
@@ -54,4 +59,3 @@ python -m ai.rag
 
 - Scraping uses Playwright; you must run `playwright install` once.
 - Summarization uses Ollama when available; otherwise a deterministic fallback summary is used so the pipeline still runs.
-

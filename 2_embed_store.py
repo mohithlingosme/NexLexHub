@@ -1,45 +1,35 @@
-import json
-from langchain_community.embeddings import OllamaEmbeddings
-from langchain.vectorstores import FAISS
-from config import DATA_FILE, DB_PATH, OLLAMA_EMBED
+#!/usr/bin/env python3
+import argparse
+import sys
+from pathlib import Path
 
 
-def load_data():
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+def _ensure_agent_on_path() -> None:
+    here = Path(__file__).resolve().parent
+    agent_root = here / "ai-legal-news-agent"
+    if str(agent_root) not in sys.path:
+        sys.path.insert(0, str(agent_root))
 
 
-def prepare_texts(data):
-    texts = []
-    for a in data:
-        text = f"""
-[ARTICLE]
-Title: {a.get('title','')}
-Date: {a.get('date','')}
+def main() -> int:
+    _ensure_agent_on_path()
+    from ai.embed import build_vector_store
 
-[CONTENT]
-{a.get('content','')}
-"""
-        texts.append(text)
-    return texts
+    parser = argparse.ArgumentParser(description="Build vector store (no LangChain/FAISS).")
+    parser.add_argument("--limit", type=int, default=None, help="Optional max chunks to index")
+    args = parser.parse_args()
 
+    try:
+        out = build_vector_store(limit=args.limit)
+    except FileNotFoundError as exc:
+        print(f"Missing chunks: {exc}")
+        print("Run: `python ai-legal-news-agent/main.py full` (or at least `chunk`) first.")
+        return 1
 
-def main():
-    print("📂 Loading data...")
-    data = load_data()
-
-    print("🧠 Creating embeddings...")
-    embeddings = OllamaEmbeddings(model=OLLAMA_EMBED)
-
-    texts = prepare_texts(data)
-
-    db = FAISS.from_texts(texts, embeddings)
-
-    db.save_local(DB_PATH)
-
-    print("✅ Vector DB saved!")
+    print(f"Vector store saved: {out}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
 

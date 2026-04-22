@@ -1,31 +1,32 @@
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
 from fastapi import FastAPI
-from pydantic import BaseModel
-
-from langchain_community.embeddings import OllamaEmbeddings
-from langchain.vectorstores import FAISS
-from langchain_community.llms import Ollama
-from langchain.chains import RetrievalQA
-
-from config import DB_PATH, OLLAMA_EMBED, OLLAMA_LLM
+from pydantic import BaseModel, Field
 
 app = FastAPI()
 
-# Load once
-embeddings = OllamaEmbeddings(model=OLLAMA_EMBED)
-db = FAISS.load_local(DB_PATH, embeddings)
-retriever = db.as_retriever(search_kwargs={"k": 4})
-llm = Ollama(model=OLLAMA_LLM)
-qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+here = Path(__file__).resolve().parent
+agent_root = here / "ai-legal-news-agent"
+if str(agent_root) not in sys.path:
+    sys.path.insert(0, str(agent_root))
+
+from ai.rag import answer_with_context, retrieve  # noqa: E402
 
 
 class Query(BaseModel):
-    question: str
+    question: str = Field(..., min_length=1)
+    k: int = Field(4, ge=1, le=25)
 
 
 @app.post("/ask")
 def ask(query: Query):
-    answer = qa.run(query.question)
-    return {"answer": answer}
+    ctx = retrieve(query.question, k=query.k)
+    answer = answer_with_context(query.question, ctx)
+    return {"answer": answer, "contexts": ctx}
 
-# Run: uvicorn 4_api:app --reload
+
+# Run: `uvicorn 4_api:app --reload`
 
