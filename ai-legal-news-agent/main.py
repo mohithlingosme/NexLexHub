@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import argparse
-import asyncio
 import logging
 import os
 import sys
 from typing import Optional
 
 from config import DEFAULT_CONFIG
+from pipeline.processor import PipelineConfig, PipelineRunner
 
 logger = logging.getLogger("ai_legal_news_agent")
 
@@ -29,46 +29,13 @@ def _ensure_local_imports() -> None:
         sys.path.insert(0, here)
 
 
-async def run_scrape(max_pages: int, *, timeout_s: int) -> None:
-    from scraper.livelaw_scraper import scrape
-
-    if timeout_s and timeout_s > 0:
-        await asyncio.wait_for(scrape(max_pages=max_pages), timeout=timeout_s)
-    else:
-        await scrape(max_pages=max_pages)
-
-
-def run_clean() -> None:
-    from pipeline.cleaner import clean_articles
-
-    clean_articles()
-
-
-def run_dedup() -> None:
-    from pipeline.deduplicator import deduplicate_articles
-
-    deduplicate_articles()
-
-
-def run_chunk() -> None:
-    from pipeline.chunker import chunk_articles
-
-    chunk_articles()
-
-
-def run_summarize() -> None:
-    from ai.summarize import summarize_articles
-
-    summarize_articles()
-
-
 def main(argv: Optional[list[str]] = None) -> int:
     _ensure_local_imports()
 
     parser = argparse.ArgumentParser(description="AI Legal News Agent pipeline")
     parser.add_argument(
         "step",
-        choices=["scrape", "clean", "dedup", "chunk", "summarize", "full", "all"],
+        choices=["scrape", "clean", "dedup", "chunk", "summarize", "embed", "full", "all"],
         help="Pipeline step to run (use 'full' for end-to-end)",
     )
     parser.add_argument(
@@ -83,6 +50,11 @@ def main(argv: Optional[list[str]] = None) -> int:
         default=300,
         help="Global timeout for scraping during 'full' (0 disables)",
     )
+    parser.add_argument(
+        "--with-embeddings",
+        action="store_true",
+        help="Run embedding/index build after 'full' completes",
+    )
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")
     parser.add_argument(
         "--strict",
@@ -94,48 +66,23 @@ def main(argv: Optional[list[str]] = None) -> int:
     _configure_logging(verbose=args.verbose)
 
     step = "full" if args.step == "all" else args.step
+    runner = PipelineRunner(
+        PipelineConfig(
+            max_pages=args.max_pages,
+            scrape_timeout_s=args.scrape_timeout_s,
+            with_embeddings=args.with_embeddings,
+        )
+    )
 
     try:
-        if step in ("full", "scrape"):
-            logger.info("Step: scrape")
+        if step == "full":
             try:
-                asyncio.run(run_scrape(max_pages=args.max_pages, timeout_s=args.scrape_timeout_s))
+                runner.run_full(strict=args.strict)
             except Exception:
-                logger.exception("Scrape step failed.")
-                if step != "full" or args.strict:
-                    raise
-        if step in ("full", "clean"):
-            logger.info("Step: clean")
-            try:
-                run_clean()
-            except Exception:
-                logger.exception("Clean step failed.")
-                if step != "full" or args.strict:
-                    raise
-        if step in ("full", "dedup"):
-            logger.info("Step: dedup")
-            try:
-                run_dedup()
-            except Exception:
-                logger.exception("Dedup step failed.")
-                if step != "full" or args.strict:
-                    raise
-        if step in ("full", "chunk"):
-            logger.info("Step: chunk")
-            try:
-                run_chunk()
-            except Exception:
-                logger.exception("Chunk step failed.")
-                if step != "full" or args.strict:
-                    raise
-        if step in ("full", "summarize"):
-            logger.info("Step: summarize")
-            try:
-                run_summarize()
-            except Exception:
-                logger.exception("Summarize step failed.")
-                if step != "full" or args.strict:
-                    raise
+                logger.exception("Pipeline failed.")
+                raise
+        else:
+            runner.run_steps([step], strict=True)
 
         logger.info("Pipeline complete.")
         return 0

@@ -1,14 +1,14 @@
-import json
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional
 
-import requests
 from tqdm import tqdm
 
 from config import DEFAULT_CONFIG
-from utils.http_utils import get_with_retries, post_json_with_retries
 from utils.file_utils import get_hash, is_valid, load_json, normalize_text, save_json
+from utils.json_utils import extract_first_json_object
+from ai.ollama_client import available as ollama_available
+from ai.ollama_client import generate as ollama_generate
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +16,6 @@ DEFAULT_INPUT_FILE = DEFAULT_CONFIG.paths.dedup_articles
 FALLBACK_INPUT_FILE = DEFAULT_CONFIG.paths.clean_articles
 DEFAULT_OUTPUT_FILE = DEFAULT_CONFIG.paths.processed_articles
 
-OLLAMA_URL = DEFAULT_CONFIG.ollama.generate_url
-OLLAMA_TAGS_URL = DEFAULT_CONFIG.ollama.tags_url
 MODEL = DEFAULT_CONFIG.ollama.summarize_model
 
 MAX_WORKERS = 3
@@ -42,57 +40,6 @@ Content: {content}
 """
 
 
-def _extract_json(text: str) -> Optional[Dict[str, Any]]:
-    if not text:
-        return None
-    start = text.find("{")
-    end = text.rfind("}")
-    if start == -1 or end == -1 or end <= start:
-        return None
-    try:
-        return json.loads(text[start : end + 1])
-    except Exception:
-        return None
-
-
-def _call_ollama_http(prompt: str) -> str:
-    data = post_json_with_retries(
-        OLLAMA_URL,
-        {"model": MODEL, "prompt": prompt, "stream": False},
-        timeout_s=120,
-        retries=2,
-        base_delay_s=1.2,
-    )
-    return str(data.get("response", "") or "")
-
-
-def _call_ollama(prompt: str) -> str:
-    """
-    Prefer the official `ollama` Python package when available; fall back to the
-    HTTP API for environments that only have `requests`.
-    """
-    try:
-        import ollama  # type: ignore
-
-        resp = ollama.generate(model=MODEL, prompt=prompt, stream=False)
-        if isinstance(resp, dict):
-            return str(resp.get("response", "") or "")
-    except Exception:
-        pass
-    return _call_ollama_http(prompt)
-
-
-def _ollama_available() -> bool:
-    try:
-        import ollama  # type: ignore
-
-        resp = ollama.list()
-        return isinstance(resp, dict) or isinstance(resp, list)
-    except Exception:
-        res = get_with_retries(OLLAMA_TAGS_URL, timeout_s=2, retries=1)
-        return bool(res is not None and res.status_code == 200)
-
-
 def _summarize_fallback(article: Dict[str, Any]) -> Dict[str, Any]:
     title = normalize_text(article.get("title", ""))
     content = normalize_text(article.get("content", ""))
@@ -113,8 +60,8 @@ def process_article(article: Dict[str, Any], *, use_ollama: bool) -> Dict[str, A
 
     if use_ollama:
         try:
-            raw = _call_ollama(prompt)
-            parsed = _extract_json(raw)
+            raw = ollama_generate(prompt, model=MODEL)
+            parsed = extract_first_json_object(raw)
         except Exception as exc:
             # Keep pipeline runnable even when Ollama isn't running.
             logger.warning("Ollama unavailable; using fallback summary (%s)", str(exc))
@@ -162,7 +109,7 @@ def summarize_articles(
 
     processed: List[Dict[str, Any]] = list(existing) if isinstance(existing, list) else []
 
-    use_ollama = _ollama_available()
+    use_ollama = ollama_available()
     if not use_ollama:
         logger.warning("Ollama not reachable; summarization will use a deterministic fallback.")
 

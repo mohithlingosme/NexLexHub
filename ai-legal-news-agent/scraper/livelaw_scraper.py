@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import random
 import re
 from datetime import datetime
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
@@ -80,15 +81,28 @@ async def _with_retries(
     base_delay_s: float = DEFAULT_CONFIG.scraper.base_delay_s,
 ):
     last_exc: Optional[BaseException] = None
-    for attempt in range(retries):
+    for attempt in range(max(1, int(retries))):
         try:
             return await coro_factory()
         except Exception as exc:
             last_exc = exc
             delay = base_delay_s * (2**attempt)
-            logger.warning("Retry %d/%d failed: %s", attempt + 1, retries, str(exc))
+            delay = delay * (0.75 + random.random() * 0.5)  # jitter
+            logger.warning("Retry %d/%d failed: %s", attempt + 1, max(1, int(retries)), str(exc))
             await asyncio.sleep(delay)
-    raise last_exc  # type: ignore[misc]
+    raise RuntimeError("Operation failed after retries") from last_exc
+
+
+async def _goto_ok(page: Any, url: str) -> None:
+    resp = await page.goto(
+        url,
+        timeout=DEFAULT_CONFIG.scraper.navigation_timeout_ms,
+        wait_until="domcontentloaded",
+    )
+    if resp is not None:
+        status = getattr(resp, "status", None)
+        if isinstance(status, int) and status >= 400:
+            raise RuntimeError(f"HTTP {status} for {url}")
 
 
 async def _extract_listing_links(page: Any) -> Set[str]:
@@ -191,13 +205,7 @@ def _extract_date(soup: BeautifulSoup, jsonld: Dict[str, Any]) -> str:
 async def _scrape_article(context: Any, url: str, category: str) -> Optional[Dict[str, Any]]:
     page = await context.new_page()
     try:
-        await _with_retries(
-            lambda: page.goto(
-                url,
-                timeout=DEFAULT_CONFIG.scraper.navigation_timeout_ms,
-                wait_until="domcontentloaded",
-            )
-        )
+        await _with_retries(lambda: _goto_ok(page, url))
         await page.wait_for_timeout(DEFAULT_CONFIG.scraper.page_settle_ms)  # let late JS settle
 
         html = await page.content()
@@ -247,7 +255,7 @@ async def scrape(
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context()
+        context = await browser.new_context(user_agent=getattr(DEFAULT_CONFIG.scraper, "user_agent", None) or None)
         context.set_default_navigation_timeout(DEFAULT_CONFIG.scraper.navigation_timeout_ms)
         context.set_default_timeout(DEFAULT_CONFIG.scraper.navigation_timeout_ms)
 
@@ -275,13 +283,7 @@ async def scrape(
                 for i in range(1, max_pages + 1):
                     listing_url = f"{category}?page={i}"
                     try:
-                        await _with_retries(
-                            lambda: page.goto(
-                                listing_url,
-                                timeout=DEFAULT_CONFIG.scraper.navigation_timeout_ms,
-                                wait_until="domcontentloaded",
-                            )
-                        )
+                        await _with_retries(lambda: _goto_ok(page, listing_url))
                     except Exception as exc:
                         logger.warning("Listing page failed: %s (%s)", listing_url, str(exc))
                         continue

@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import time
 from typing import Any, Dict, List, Optional, Union
 
 logger = logging.getLogger(__name__)
@@ -57,7 +58,10 @@ def save_json(data: Any, file_path: Union[str, Path], indent: int = 2) -> None:
     """Save JSON to disk, creating parent directories if needed."""
     path = resolve_path(file_path)
     ensure_dir(path.parent)
-    path.write_text(json.dumps(data, indent=indent, ensure_ascii=False), encoding="utf-8")
+    payload = json.dumps(data, indent=indent, ensure_ascii=False)
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.{time.time_ns()}.tmp")
+    tmp.write_text(payload, encoding="utf-8")
+    tmp.replace(path)
 
 
 def normalize_text(text: str) -> str:

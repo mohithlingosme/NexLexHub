@@ -1,10 +1,9 @@
 import logging
 from typing import Any, Dict, List, Optional, Tuple
 
-import requests
-
 from config import DEFAULT_CONFIG
-from utils.http_utils import post_json_with_retries
+from ai.ollama_client import embed_one as ollama_embed_one
+from ai.ollama_client import generate as ollama_generate
 from utils.file_utils import load_json, normalize_text
 from utils.vector_utils import cosine, hash_embed
 
@@ -12,38 +11,21 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_STORE_FILE = DEFAULT_CONFIG.paths.vector_store
 
-OLLAMA_URL = DEFAULT_CONFIG.ollama.generate_url
-OLLAMA_EMBED_URL = DEFAULT_CONFIG.ollama.embeddings_url
 MODEL = DEFAULT_CONFIG.ollama.summarize_model
 
 
-def _ollama_embed_query(text: str, *, model: str) -> Optional[List[float]]:
-    try:
-        import ollama  # type: ignore
-
-        resp = ollama.embeddings(model=model, prompt=text)
-        if isinstance(resp, dict) and isinstance(resp.get("embedding"), list):
-            return [float(x) for x in resp["embedding"]]
-    except Exception:
-        pass
-    return None
-
-
-def _ollama_embed_query_http(text: str, *, model: str) -> Optional[List[float]]:
-    try:
-        data = post_json_with_retries(
-            OLLAMA_EMBED_URL,
-            {"model": model, "prompt": text},
-            timeout_s=120,
-            retries=2,
-            base_delay_s=1.2,
-        )
-        emb = data.get("embedding") if isinstance(data, dict) else None
-        if isinstance(emb, list) and emb:
-            return [float(x) for x in emb]
-    except Exception:
-        return None
-    return None
+def _lexical_score(query: str, text: str) -> float:
+    q = [t for t in normalize_text(query).lower().split() if t]
+    if not q:
+        return 0.0
+    doc = normalize_text(text).lower()
+    score = 0.0
+    for tok in set(q):
+        # very small, dependency-free BM25-ish signal
+        tf = doc.count(tok)
+        if tf:
+            score += 1.0 + (tf ** 0.5)
+    return score
 
 
 def retrieve(
@@ -60,26 +42,43 @@ def retrieve(
 
     q = normalize_text(query)
     qv: Optional[List[float]] = None
-    if isinstance(backend, str) and (backend.startswith("ollama:") or backend.startswith("ollama_http:")):
+    if isinstance(backend, str) and backend.startswith("ollama:"):
         model = backend.split(":", 1)[1] if ":" in backend else DEFAULT_CONFIG.ollama.embed_model
-        qv = _ollama_embed_query(q, model=model) or _ollama_embed_query_http(q, model=model)
+        try:
+            qv = ollama_embed_one(q, model=model)
+        except Exception:
+            logger.warning("Ollama query embedding failed; falling back to lexical retrieval.")
+            qv = None
 
-    if qv is None:
+    if qv is None and (not isinstance(backend, str) or backend == "hash"):
         qv = hash_embed(q)
 
     scored: List[Tuple[float, Dict[str, Any]]] = []
-    for it in items:
-        if not isinstance(it, dict):
-            continue
-        meta = it.get("meta")
-        vec = it.get("vector")
-        if not isinstance(meta, dict) or not isinstance(vec, list):
-            continue
-        try:
-            score = cosine(qv, [float(x) for x in vec])
-        except Exception:
-            continue
-        scored.append((score, meta))
+    if qv is not None:
+        for it in items:
+            if not isinstance(it, dict):
+                continue
+            meta = it.get("meta")
+            vec = it.get("vector")
+            if not isinstance(meta, dict) or not isinstance(vec, list):
+                continue
+            try:
+                score = cosine(qv, [float(x) for x in vec])
+            except Exception:
+                continue
+            scored.append((score, meta))
+    else:
+        # Lexical fallback for "ollama:*" stores when Ollama isn't reachable at query-time.
+        for it in items:
+            if not isinstance(it, dict):
+                continue
+            meta = it.get("meta")
+            if not isinstance(meta, dict):
+                continue
+            text = str(meta.get("text", "") or "")
+            if not text:
+                continue
+            scored.append((_lexical_score(q, text), meta))
 
     scored.sort(key=lambda x: x[0], reverse=True)
     return [m for _, m in scored[: max(1, int(k))]]
@@ -103,14 +102,7 @@ User question: {normalize_text(query)}
 """
 
     try:
-        data = post_json_with_retries(
-            OLLAMA_URL,
-            {"model": MODEL, "prompt": prompt, "stream": False},
-            timeout_s=120,
-            retries=2,
-            base_delay_s=1.2,
-        )
-        return normalize_text(str(data.get("response", "") or ""))
+        return normalize_text(ollama_generate(prompt, model=MODEL))
     except Exception as exc:
         logger.warning("Ollama unavailable, returning retrieved excerpts only (%s)", str(exc))
         lines = []
