@@ -54,6 +54,10 @@ class OllamaConfig:
     base_url: str = os.getenv("OLLAMA_BASE_URL") or os.getenv("OLLAMA_HOST") or "http://localhost:11434"
     summarize_model: str = os.getenv("OLLAMA_SUMMARIZE_MODEL") or "llama3"
     embed_model: str = os.getenv("OLLAMA_EMBED_MODEL") or "nomic-embed-text"
+    generate_timeout_s: int = _env_int("OLLAMA_GENERATE_TIMEOUT_S", 120, min_value=5, max_value=600)
+    embed_timeout_s: int = _env_int("OLLAMA_EMBED_TIMEOUT_S", 120, min_value=5, max_value=600)
+    retries: int = _env_int("OLLAMA_RETRIES", 2, min_value=1, max_value=8)
+    base_delay_s: float = _env_float("OLLAMA_BASE_DELAY_S", 1.2, min_value=0.1, max_value=30.0)
 
     @property
     def generate_url(self) -> str:
