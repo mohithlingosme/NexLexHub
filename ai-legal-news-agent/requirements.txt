@@ -1,12 +1,8 @@
 playwright
 beautifulsoup4
-requests
 lxml
-hashlib
-json
-asyncio
-urllib.parse
-bs4
+requests
+tqdm
+ollama
 pytest
-logging
 
