@@ -1,45 +1,57 @@
 # AI Legal News Agent
 
-Production-grade pipeline for scraping, cleaning, chunking, and AI-processing legal news from LiveLaw.in.
+Production-grade pipeline for scraping, cleaning, deduplicating, chunking, and AI-summarizing legal news from LiveLaw.in.
 
-## 🚀 Quick Start
+## Setup
 
 ```bash
-# Install deps
-pip install -r requirements.txt
-
-# Install Playwright browsers
-playwright install
-
-# Run full pipeline
 cd ai-legal-news-agent
-python main.py all
+pip install -r requirements.txt
+playwright install
+```
 
-# Or step by step
-python main.py scrape
+If you want AI summaries and embeddings:
+
+```bash
+# Start Ollama separately, then pull the models you want:
+ollama pull llama3
+ollama pull nomic-embed-text
+```
+
+## Run
+
+```bash
+# End-to-end
+python main.py full
+
+# Step-by-step
+python main.py scrape --max-pages 10
 python main.py clean
+python main.py dedup
 python main.py chunk
 python main.py summarize
 ```
 
-## 📁 Structure
+## Output
 
-- `data/raw/` → Raw scraped articles
-- `data/processed/` → Cleaned articles
-- `data/chunks/` → Chunked data for RAG
-- `scraper/` → LiveLaw scraper
-- `pipeline/` → ETL pipeline
-- `ai/` → LLM processing + embeddings/RAG
-- `utils/` → Helpers
+- `data/raw/articles.json` — raw scraped articles
+- `data/processed/clean_articles.json` — cleaned articles
+- `data/processed/deduplicated_articles.json` — deduplicated articles
+- `data/chunks/chunk_*.json` — chunks for retrieval
+- `data/processed/processed_articles.json` — AI summaries
 
-## Pipeline Flow
+## Embeddings + RAG (optional)
 
+```bash
+# Build a lightweight vector store from chunk files
+python -m ai.embed
+
+# Retrieve + answer (uses Ollama if available)
+python -m ai.rag
 ```
-scrape → clean → dedup → chunk → summarize → embed → RAG
-```
 
-## Config
+## Notes
 
-- Ollama URL: `http://localhost:11434` (llama3 model)
-- Update `utils/config.py` for custom settings
+- Scraping uses Playwright; you must run `playwright install` once.
+- Summarization uses Ollama when available; otherwise a deterministic fallback summary is used so the pipeline still runs.
 

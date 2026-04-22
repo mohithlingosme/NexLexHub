@@ -1,185 +1,285 @@
 import asyncio
-import logging
-from playwright.async_api import async_playwright
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse
 import json
+import logging
 import re
-import os
-import hashlib
 from datetime import datetime
-import random
-from utils.file_utils import save_json, load_json
-from utils.date_parser import parse_date
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
+from urllib.parse import urljoin, urlparse
 
-logging.basicConfig(level=logging.INFO)
+from bs4 import BeautifulSoup
+
+from utils.date_parser import parse_date
+from utils.file_utils import load_json, normalize_text, save_json
+
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://www.livelaw.in"
+
 CATEGORY_URLS = [
     "https://www.livelaw.in/news-updates",
     "https://www.livelaw.in/top-stories",
     "https://www.livelaw.in/supreme-court",
-    "https://www.livelaw.in/high-court/karnataka-high-court",
     "https://www.livelaw.in/high-court",
     "https://www.livelaw.in/articles",
     "https://www.livelaw.in/digests",
     "https://www.livelaw.in/consumer-cases",
-    "https://www.livelaw.in/book-reviews",
     "https://www.livelaw.in/round-ups",
     "https://www.livelaw.in/more/international",
     "https://www.livelaw.in/ibc-cases",
     "https://www.livelaw.in/arbitration-cases",
     "https://www.livelaw.in/labour-service",
     "https://www.livelaw.in/tech-law",
-    "https://www.livelaw.in/corporate-law"
+    "https://www.livelaw.in/corporate-law",
 ]
 
-MAX_PAGES = 10
-DATA_FILE = "data/raw/articles.json"
+DEFAULT_MAX_PAGES = 10
+DEFAULT_OUT_FILE = "data/raw/articles.json"
 
-PROXIES = [None]  # Add proxies if needed
+_ARTICLE_ID_RE = re.compile(r"-\d+$")
 
-def clean_text(text):
-    return " ".join(text.split()).strip()
 
-def normalize_url(href):
+def _require_playwright() -> Tuple[Any, Any, Any, Any]:
+    """
+    Import Playwright lazily so non-scrape steps (clean/dedup/chunk/summarize)
+    can run without the heavy Playwright dependency.
+    """
+    try:
+        from playwright.async_api import Browser, BrowserContext, Page, async_playwright  # type: ignore
+
+        return Browser, BrowserContext, Page, async_playwright
+    except Exception as exc:
+        raise RuntimeError(
+            "Playwright is required for scraping. Install deps with `pip install -r requirements.txt` "
+            "and install browsers with `playwright install`."
+        ) from exc
+
+
+def _normalize_url(href: str) -> str:
+    href = (href or "").strip()
     if not href:
         return ""
     if href.startswith("/"):
         return urljoin(BASE_URL, href)
     return href
 
-def is_valid_article_url(url):
+
+def _is_valid_article_url(url: str) -> bool:
     if not url:
         return False
     parsed = urlparse(url)
-    return "livelaw.in" in parsed.netloc and re.search(r"-\d+$", parsed.path)
+    if "livelaw.in" not in parsed.netloc:
+        return False
+    return bool(_ARTICLE_ID_RE.search(parsed.path))
 
-def hash_title(title):
-    text = title.lower()
-    return hashlib.md5(text.encode()).hexdigest()
 
-async def retry(func, *args, retries=3):
+async def _with_retries(coro_factory, *, retries: int = 3, base_delay_s: float = 1.5):
+    last_exc: Optional[BaseException] = None
     for attempt in range(retries):
         try:
-            return await func(*args)
-        except Exception as e:
-            logger.error(f"Attempt {attempt+1} failed: {e}")
-            if attempt == retries - 1:
-                return None
-            await asyncio.sleep(2 ** attempt)
+            return await coro_factory()
+        except Exception as exc:
+            last_exc = exc
+            delay = base_delay_s * (2**attempt)
+            logger.warning("Retry %d/%d failed: %s", attempt + 1, retries, str(exc))
+            await asyncio.sleep(delay)
+    raise last_exc  # type: ignore[misc]
 
-async def extract_links(page):
-    content = await page.content()
-    soup = BeautifulSoup(content, "html.parser")
-    links = set()
+
+async def _extract_listing_links(page: Any) -> Set[str]:
+    html = await page.content()
+    soup = BeautifulSoup(html, "lxml")
+
+    links: Set[str] = set()
     for a in soup.find_all("a", href=True):
-        href = normalize_url(a["href"])
-        if is_valid_article_url(href):
+        href = _normalize_url(a.get("href", ""))
+        if _is_valid_article_url(href):
             links.add(href)
     return links
 
-async def scrape_article(context, url):
+
+def _extract_jsonld_article(soup: BeautifulSoup) -> Dict[str, Any]:
+    for script in soup.find_all("script", type="application/ld+json"):
+        raw = script.string
+        if not raw:
+            continue
+        try:
+            data = json.loads(raw)
+        except Exception:
+            continue
+
+        candidates: List[Dict[str, Any]] = []
+        if isinstance(data, dict):
+            candidates = [data]
+        elif isinstance(data, list):
+            candidates = [d for d in data if isinstance(d, dict)]
+
+        for obj in candidates:
+            typ = obj.get("@type")
+            if typ in ("NewsArticle", "Article"):
+                return obj
+    return {}
+
+
+def _extract_article_body(soup: BeautifulSoup) -> str:
+    # Try known-ish containers first, then fall back to all <p>.
+    containers = []
+    for sel in [
+        "article",
+        ".details-content",
+        ".details-news",
+        ".article-content",
+        ".article_body",
+        ".post-content",
+        ".content",
+    ]:
+        node = soup.select_one(sel)
+        if node is not None:
+            containers.append(node)
+
+    if not containers:
+        containers = [soup]
+
+    paras: List[str] = []
+    for container in containers:
+        for p in container.find_all("p"):
+            txt = normalize_text(p.get_text(" ", strip=True))
+            if not txt:
+                continue
+            # Filter obvious boilerplate lines.
+            if txt.lower() in ("advertisement", "subscribe", "follow us"):
+                continue
+            paras.append(txt)
+        if len(" ".join(paras)) >= 800:
+            break
+
+    return normalize_text("\n\n".join(paras))
+
+
+def _extract_title(soup: BeautifulSoup, jsonld: Dict[str, Any]) -> str:
+    title = normalize_text(jsonld.get("headline", ""))
+    if title:
+        return title
+
+    h1 = soup.find("h1")
+    if h1:
+        title = normalize_text(h1.get_text(" ", strip=True))
+    return title
+
+
+def _extract_date(soup: BeautifulSoup, jsonld: Dict[str, Any]) -> str:
+    date = normalize_text(jsonld.get("datePublished", "")) or normalize_text(jsonld.get("dateCreated", ""))
+    if date:
+        return date
+
+    meta = soup.find("meta", attrs={"property": "article:published_time"})
+    if meta and meta.get("content"):
+        return normalize_text(meta["content"])
+
+    time_el = soup.find("time")
+    if time_el:
+        return normalize_text(time_el.get("datetime") or time_el.get_text(" ", strip=True))
+
+    return ""
+
+
+async def _scrape_article(context: Any, url: str, category: str) -> Optional[Dict[str, Any]]:
     page = await context.new_page()
     try:
-        await page.goto(url, timeout=60000)
-        await page.wait_for_timeout(1000)
-        soup = BeautifulSoup(await page.content(), "html.parser")
-        data = {
+        await _with_retries(lambda: page.goto(url, timeout=60_000, wait_until="domcontentloaded"))
+        await page.wait_for_timeout(600)  # let late JS settle
+
+        html = await page.content()
+        soup = BeautifulSoup(html, "lxml")
+
+        jsonld = _extract_jsonld_article(soup)
+        title = _extract_title(soup, jsonld)
+        content = normalize_text(jsonld.get("articleBody", "")) or _extract_article_body(soup)
+        date = _extract_date(soup, jsonld)
+
+        if not title or not content:
+            return None
+
+        return {
             "url": url,
-            "title": "",
-            "content": "",
-            "date": "",
-            "description": "",
-            "image": "",
-            "category": "",
-            "tags": []
+            "title": title,
+            "content": content,
+            "date": date,
+            "category": category,
+            "scraped_at": datetime.utcnow().isoformat(),
         }
-        # JSON-LD
-        for script in soup.find_all("script", type="application/ld+json"):
-            try:
-                j = json.loads(script.string)
-                if isinstance(j, list):
-                    j = j[0]
-                if j.get("@type") in ["NewsArticle", "Article"]:
-                    data["title"] = j.get("headline", "")
-                    data["content"] = clean_text(j.get("articleBody", ""))
-                    data["date"] = j.get("datePublished", "")
-                    data["description"] = j.get("description", "")
-                    break
-            except:
-                continue
-        # Fallbacks
-        if not data["title"]:
-            h1 = soup.find("h1")
-            if h1:
-                data["title"] = clean_text(h1.get_text())
-        if not data["content"]:
-            paragraphs = soup.find_all("p")
-            data["content"] = clean_text(" ".join(p.get_text() for p in paragraphs[:20]))
-        # RAG format
-        data["scraped_at"] = datetime.now().isoformat()
-        logger.info(f"Scraped: {data['title'][:50]}...")
-        return data
-    except Exception as e:
-        logger.error(f"Article error {url}: {e}")
+    except Exception as exc:
+        logger.warning("Failed to scrape article %s: %s", url, str(exc))
         return None
     finally:
         await page.close()
 
-async def scrape():
-    try:
-        existing_data = load_json(DATA_FILE)
-        existing = {a["url"]: a for a in existing_data if "url" in a}
-        title_hashes = {hash_title(a["title"]): True for a in existing_data if "title" in a}
-        logger.info(f"Loaded {len(existing)} articles")
-        
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            context = await browser.new_context()
-            page = await context.new_page()
-            
-            all_articles = list(existing.values())
-            
-            for category in CATEGORY_URLS:
-                logger.info(f"Scraping {category}")
-                for i in range(1, MAX_PAGES + 1):
-                    url = f"{category}?page={i}"
-                    await retry(page.goto, url)
-                    
-                    links = await extract_links(page)
-                    logger.info(f"Found {len(links)} links")
-                    
-                    tasks = []
-                    for link in links:
-                        if link not in existing:
-                            tasks.append(scrape_article(context, link))
-                    
+
+async def scrape(
+    *,
+    categories: Optional[Iterable[str]] = None,
+    max_pages: int = DEFAULT_MAX_PAGES,
+    out_file: str = DEFAULT_OUT_FILE,
+    concurrency: int = 6,
+) -> List[Dict[str, Any]]:
+    _, _, _, async_playwright = _require_playwright()
+    categories = list(categories) if categories is not None else list(CATEGORY_URLS)
+
+    existing_data = load_json(out_file, default=[])
+    existing_by_url = {a.get("url"): a for a in existing_data if isinstance(a, dict) and a.get("url")}
+
+    sem = asyncio.Semaphore(concurrency)
+
+    async def bounded_scrape(ctx: Any, link: str, cat: str):
+        async with sem:
+            return await _scrape_article(ctx, link, cat)
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context()
+        page = await context.new_page()
+
+        try:
+            all_articles: List[Dict[str, Any]] = list(existing_by_url.values())
+
+            for category in categories:
+                logger.info("Listing: %s", category)
+                for i in range(1, max_pages + 1):
+                    listing_url = f"{category}?page={i}"
+                    try:
+                        await _with_retries(lambda: page.goto(listing_url, timeout=60_000, wait_until="domcontentloaded"))
+                    except Exception as exc:
+                        logger.warning("Listing page failed: %s (%s)", listing_url, str(exc))
+                        continue
+
+                    links = await _extract_listing_links(page)
+                    new_links = [l for l in links if l not in existing_by_url]
+                    if not new_links:
+                        continue
+
+                    tasks = [bounded_scrape(context, link, category) for link in sorted(new_links)]
                     results = await asyncio.gather(*tasks, return_exceptions=True)
-                    
-                    for article in results:
-                        if isinstance(article, Exception):
+
+                    for result in results:
+                        if isinstance(result, Exception) or not result:
                             continue
-                        if not article:
-                            continue
-                        title_hash = hash_title(article["title"])
-                        if title_hash in title_hashes:
-                            continue
-                        title_hashes.add(title_hash)
-                        all_articles.append(article)
-                        logger.info(f"Added: {article['title'][:50]}")
-                    
-                    await asyncio.sleep(2)  # Rate limit
-            
+                        existing_by_url[result["url"]] = result
+                        all_articles.append(result)
+
+                    # Save incrementally so partial runs still produce output.
+                    all_articles.sort(key=lambda x: parse_date(x.get("date", "")), reverse=True)
+                    save_json(all_articles, out_file)
+
+                    await asyncio.sleep(1.2)  # polite pacing
+
             all_articles.sort(key=lambda x: parse_date(x.get("date", "")), reverse=True)
-            save_json(all_articles, DATA_FILE)
-            logger.info("Scraping complete!")
-            
+            save_json(all_articles, out_file)
+            return all_articles
+        finally:
+            await context.close()
             await browser.close()
-    except Exception as e:
-        logger.error(f"Scrape failed: {e}")
+
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     asyncio.run(scrape())
 
