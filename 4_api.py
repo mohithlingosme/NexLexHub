@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger("nexlexhub_api")
 
@@ -47,8 +47,8 @@ def health() -> Dict[str, Any]:
     try:
         stats = store_stats()
         return {"ok": True, "vector_store": stats}
-    except FileNotFoundError:
-        return {"ok": True, "vector_store": {"loaded": False}}
+    except (FileNotFoundError, ValueError) as exc:
+        return {"ok": True, "vector_store": {"loaded": False, "error": str(exc)}}
 
 
 @app.post("/ask", response_model=AskResponse)
@@ -60,13 +60,13 @@ def ask(payload: AskRequest) -> AskResponse:
     try:
         stats = store_stats()
         backend = str(stats.get("backend") or "")
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=503, detail=f"vector store missing: {exc}") from exc
+    except (FileNotFoundError, ValueError) as exc:
+        raise HTTPException(status_code=503, detail=f"vector store unavailable: {exc}") from exc
 
     try:
         ctx = retrieve(question, k=payload.k)
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=503, detail=f"vector store missing: {exc}") from exc
+    except (FileNotFoundError, ValueError) as exc:
+        raise HTTPException(status_code=503, detail=f"vector store unavailable: {exc}") from exc
     except Exception as exc:
         logger.exception("Retrieve failed")
         raise HTTPException(status_code=500, detail="retrieve failed") from exc

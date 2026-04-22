@@ -7,7 +7,7 @@ from tqdm import tqdm
 from config import DEFAULT_CONFIG
 from ai.ollama_client import embed_many as ollama_embed_many
 from utils.file_utils import load_json, normalize_text, resolve_path, save_json
-from utils.vector_utils import hash_embed
+from utils.vector_utils import hash_embed, l2_normalize
 
 logger = logging.getLogger(__name__)
 
@@ -17,14 +17,6 @@ DEFAULT_STORE_FILE = DEFAULT_CONFIG.paths.vector_store
 DEFAULT_EMBED_MODEL = DEFAULT_CONFIG.ollama.embed_model
 
 
-def _l2_normalize(vec: List[float]) -> List[float]:
-    s = 0.0
-    for x in vec:
-        s += x * x
-    n = s ** 0.5
-    if not n:
-        return vec
-    return [x / n for x in vec]
 
 
 def load_chunks(chunks_glob: str = DEFAULT_CHUNKS_GLOB) -> List[Dict[str, Any]]:
@@ -110,7 +102,7 @@ def build_vector_store(
         backend = f"ollama:{embed_model}"
         texts, metas = _select_missing(backend)
         try:
-            vectors = [_l2_normalize(v) for v in ollama_embed_many(texts, model=embed_model)]
+            vectors = [l2_normalize(v) for v in ollama_embed_many(texts, model=embed_model)]
         except Exception as exc:
             logger.warning("Ollama embeddings unavailable; falling back to hash embeddings (%s)", str(exc))
             backend = "hash"

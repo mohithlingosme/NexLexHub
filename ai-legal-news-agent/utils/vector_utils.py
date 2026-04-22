@@ -7,7 +7,20 @@ from typing import List, Sequence
 from utils.file_utils import normalize_text
 
 
+def l2_normalize(vec: Sequence[float]) -> List[float]:
+    out = [float(x) for x in vec]
+    s = 0.0
+    for x in out:
+        s += x * x
+    n = math.sqrt(s)
+    if not n:
+        return out
+    return [x / n for x in out]
+
+
 def cosine(a: Sequence[float], b: Sequence[float]) -> float:
+    if len(a) != len(b):
+        return 0.0
     dot = 0.0
     na = 0.0
     nb = 0.0
@@ -28,6 +41,4 @@ def hash_embed(text: str, *, dim: int = 256) -> List[float]:
     for tok in normalize_text(text).lower().split():
         h = int(hashlib.sha256(tok.encode("utf-8")).hexdigest(), 16)
         counts[h % dim] += 1.0
-    norm = math.sqrt(sum(v * v for v in counts)) or 1.0
-    return [v / norm for v in counts]
-
+    return l2_normalize(counts)

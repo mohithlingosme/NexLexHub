@@ -56,9 +56,9 @@ def generate(
     *,
     model: str = DEFAULT_CONFIG.ollama.summarize_model,
     base_url: str = DEFAULT_CONFIG.ollama.base_url,
-    timeout_s: int = 120,
-    retries: int = 2,
-    base_delay_s: float = 1.2,
+    timeout_s: int = DEFAULT_CONFIG.ollama.generate_timeout_s,
+    retries: int = DEFAULT_CONFIG.ollama.retries,
+    base_delay_s: float = DEFAULT_CONFIG.ollama.base_delay_s,
 ) -> str:
     """
     Generate text using Ollama.
@@ -92,9 +92,9 @@ def embed_one(
     *,
     model: str = DEFAULT_CONFIG.ollama.embed_model,
     base_url: str = DEFAULT_CONFIG.ollama.base_url,
-    timeout_s: int = 120,
-    retries: int = 2,
-    base_delay_s: float = 1.2,
+    timeout_s: int = DEFAULT_CONFIG.ollama.embed_timeout_s,
+    retries: int = DEFAULT_CONFIG.ollama.retries,
+    base_delay_s: float = DEFAULT_CONFIG.ollama.base_delay_s,
 ) -> List[float]:
     """
     Returns a single embedding vector.
@@ -131,9 +131,9 @@ def embed_many(
     *,
     model: str = DEFAULT_CONFIG.ollama.embed_model,
     base_url: str = DEFAULT_CONFIG.ollama.base_url,
-    timeout_s: int = 120,
-    retries: int = 2,
-    base_delay_s: float = 1.2,
+    timeout_s: int = DEFAULT_CONFIG.ollama.embed_timeout_s,
+    retries: int = DEFAULT_CONFIG.ollama.retries,
+    base_delay_s: float = DEFAULT_CONFIG.ollama.base_delay_s,
 ) -> List[List[float]]:
     """
     Embeds texts sequentially (safe default for local Ollama).
