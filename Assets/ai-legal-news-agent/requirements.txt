@@ -1,0 +1,12 @@
+playwright
+beautifulsoup4
+lxml
+requests
+tqdm
+ollama
+pytest
+fastapi
+uvicorn[standard]
+schedule
+pydantic
+
