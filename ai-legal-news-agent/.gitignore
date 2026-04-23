@@ -1,8 +1,0 @@
-__pycache__/
-*.pyc
-.env
-data/
-scraper.log
-.pytest_cache/
-.DS_Store
-

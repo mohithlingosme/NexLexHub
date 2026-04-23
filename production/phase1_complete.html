@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexNexHub Phase 1 - Complete Interactive Plan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --progress: 0%; }
+        body { font-family: 'Inter', sans-serif; }
+        .section-content { display: none; }
+        .section-content.active { display: block; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .progress-bar { background: linear-gradient(to right, #10b981 var(--progress), #e5e7eb var(--progress)); transition: all 0.3s ease; }
+        .html-sample { max-height: 400px; overflow-y: auto; }
+        .code-block { position: relative; }
+        .copy-btn { position: absolute; top: 8px; right: 8px; opacity: 0; transition: opacity 0.2s; }
+        .code-block:hover .copy-btn { opacity: 1; }
+        .mermaid { text-align: center; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 min-h-screen py-12 px-4 md:px-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Hero Header -->
+        <header class="text-center mb-16">
+            <div class="inline-block">
+                <h1 class="text-6xl md:text-7xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 leading-tight">
+                    LexNexHub
+                </h1>
+                <p class="text-2xl md:text-3xl font-semibold text-gray-700 mb-8 max-w-2xl mx-auto">
+                    Phase 1: AI Legal Intelligence Pipeline
+                </p>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-4 max-w-md mx-auto overflow-hidden shadow-lg">
+                <div class="progress-bar h-full rounded-full shadow-inner"></div>
+            </div>
+            <p class="text-sm text-gray-500 mt-2 font-mono">Interactive Roadmap • Click sections to explore</p>
+        </header>
+
+        <div class="grid lg:grid-cols-4 gap-8">
+            <!-- Interactive Sidebar TOC -->
+            <aside class="lg:col-span-1 bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/50 sticky top-24 max-h-[80vh] overflow-y-auto">
+                <h2 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
+                    📋 Table of Contents
+                </h2>
+                <nav id="toc-nav" class="space-y-3"></nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="lg:col-span-3 space-y-12">
+                
+                <!-- 1. Objectives & KPIs -->
+                <section id="objectives" class="section-content active card">
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-3xl p-12 shadow-2xl">
+                        <h2 class="text-4xl font-black mb-2">🎯 Objectives & KPIs</h2>
+                        <p class="text-xl opacity-95 mb-12">Core business and technical targets</p>
+                    </div>
+                    <div class="bg-white rounded-3xl p-10 shadow-xl border border-gray-200/50 -mt-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="bg-gradient-to-r from-indigo-50 to-purple-50 border-b-2 border-indigo-200">
+                                        <th class="p-5 text-left font-bold text-gray-800">Objective</th>
+                                        <th class="p-5 text-left font-bold text-gray-800">KPI</th>
+                                        <th class="p-5 text-left font-bold text-gray-800">Priority</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="hover:bg-indigo-50 transition-colors group">
+                                        <td class="p-5 font-semibold text-gray-900 border-b">Gain Traffic</td>
+                                        <td class="p-5 text-gray-700 border-b">10k monthly users</td>
+                                        <td class="p-5 border-b">
+                                            <span class="bg-red-100 text-red-800 px-4 py-2 rounded-full text-sm font-bold group-hover:bg-red-200 transition-all">🔥 High</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-indigo-50 transition-colors group">
+                                        <td class="p-5 font-semibold text-gray-900 border-b">Current Affairs</td>
+                                        <td class="p-5 text-gray-700 border-b">Daily legal news</td>
+                                        <td class="p-5 border-b">
+                                            <span class="bg-red-100 text-red-800 px-4 py-2 rounded-full text-sm font-bold group-hover:bg-red-200 transition-all">🔥 High</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-indigo-50 transition-colors group">
+                                        <td class="p-5 font-semibold text-gray-900">Brand Awareness</td>
+                                        <td class="p-5 text-gray-700">Newsletter subscribers</td>
+                                        <td class="p-5">
+                                            <span class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm font-bold group-hover:bg-yellow-200 transition-all">⭐ Medium</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Core Workflow -->
+                <section id="workflow" class="section-content card">
+                    <div class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-3xl p-12 shadow-2xl">
+                        <h2 class="text-4xl font-black mb-2">🔄 Core Workflow</h2>
+                        <p class="text-xl opacity-95 mb-4">End-to-end data transformation pipeline</p>
+                    </div>
+                    <div class="bg-white rounded-3xl p-10 shadow-xl border border-gray-200/50 -mt-6 grid md:grid-cols-2 gap-12">
+                        <!-- Workflow Diagram -->
+                        <div class="md:col-span-1">
+                            <div class="mermaid" id="workflow-diagram">
+                                graph TD
+                                    A[🌐 Multi-Source<br/>Scraper] --> B[🧹 Cleaning &<br/>Normalization]
+                                    B --> C[⚖️ Legal Filter<br/>Legal-BERT]
+                                    C --> D[✂️ Chunking<br/>Sliding Window]
+                                    D --> E[🤖 LLM Processing<br/>Llama3 CoT]
+                                    E --> F[🧪 QA Engine<br/>Cosine + Score]
+                                    F -->|Score > 8| G[💾 Storage<br/>Postgres/ES/S3]
+                                    G --> H[📤 Publish<br/>News/API/Newsletter]
+                                    F -.->|Alert| I[🛡️ ML Security<br/>Isolation Forest]
+                                    style A fill:#e0f2fe
+                                    style H fill:#dcfce7
+                                    style I fill:#fee2e2
+                            </div>
+                        </div>
+                        
+                        <!-- Sample JSON -->
+                        <div>
+                            <h3 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                                📄 Sample Input/Output
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Raw Article Input</label>
+                                    <div class="code-block bg-gray-900 text-green-400 p-4 rounded-xl text-xs font-mono">
+                                        <pre>{ "url": "https://livelaw.in/...",
+  "title": "Magistrate's Order...",
+  "content": "The Supreme Court...",
+  "date": "2026-04-14T12:59:00Z" }</pre>
+                                        <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-xs font-bold transition-all" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Processed Output Schema</label>
+                                    <div class="code-block bg-indigo-900/50 text-indigo-200 p-4 rounded-xl text-xs font-mono border border-indigo-500/50">
+                                        <pre>{
+  "title": "string",
+  "summary_intro": "2 lines summary",
+  "background": "Case context",
+  "court_reasoning": "Analysis",
+  "legal_principles": "Key laws",
+  "case_references": ["Case1", "Case2"],
+  "final_ruling": "Outcome", 
+  "conclusion": "Implications",
+  "qa_score": 9.2,
+  "tags": ["criminal", "sc"]
+}</pre>
+                                        <button class="copy-btn bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded text-xs font-bold transition-all" onclick="copyCode(this)">Copy Schema</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Processing Pipeline Details -->
+                <section id="pipeline" class="section-content card">
+                    <div class="bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-3xl p-12 shadow-2xl">
+                        <h2 class="text-4xl font-black mb-2">⚙️ Processing Pipeline</h2>
+                        <p class="text-xl opacity-95">Detailed engineering breakdown</p>
+                    </div>
+                    <div class="bg-white rounded-3xl p-12 shadow-xl border border-gray-200/50 -mt-6 grid md:grid-cols-3 gap-8">
+                        <div class="group hover:scale-105 transition-all p-6 bg-gradient-to-b from-gray-50 to-white rounded-2xl border-2 border-indigo-100 hover:border-indigo-300 hover:shadow-xl">
+                            <div class="w-16 h-16 bg-indigo-500 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:rotate-12 transition-all">
+                                <span class="text-2xl">🌐</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3 text-center">Scraper Layer</h3>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li>• BFS crawling + asyncio</li>
+                                <li>• Playwright + BeautifulSoup</li>
+                                <li>• MinHash deduplication</li>
+                                <li>• Token Bucket rate limit</li>
+                            </ul>
+                        </div>
+                        <div class="group hover:scale-105 transition-all p-6 bg-gradient-to-b from-gray-50 to-white rounded-2xl border-2 border-emerald-100 hover:border-emerald-300 hover:shadow-xl">
+                            <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:rotate-12 transition-all">
+                                <span class="text-2xl">🤖</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3 text-center">LLM Engine</h3>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li>• Llama3 via Ollama</li>
+                                <li>• Chain-of-Thought prompts</li>
+                                <li>• Structured JSON output</li>
+                                <li>• Few-shot examples</li>
+                            </ul>
+                        </div>
+                        <div class="group hover:scale-105 transition-all p-6 bg-gradient-to-b from-gray-50 to-white rounded-2xl border-2 border-purple-100 hover:border-purple-300 hover:shadow-xl">
+                            <div class="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:rotate-12 transition-all">
+                                <span class="text-2xl">🧪</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3 text-center">QA Engine</h3>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li>• Cosine similarity check</li>
+                                <li>• Structural validation</li>
+                                <li>• Hallucination detection</li>
+                                <li>• Weighted scoring >8</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-12 grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-6 text-gray-800">📊 Content Types</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                <div class="p-4 bg-blue-100 rounded-xl hover:bg-blue-200 cursor-pointer transition-all text-center font-medium">📰 News</div>
+                                <div class="p-4 bg-green-100 rounded-xl hover:bg-green-200 cursor-pointer transition-all text-center font-medium">📖 Legal Blog</div>
+                                <div class="p-4 bg-purple-100 rounded-xl hover:bg-purple-200 cursor-pointer transition-all text-center font-medium">💡 Insight</div>
+                                <div class="p-4 bg-orange-100 rounded-xl hover:bg-orange-200 cursor-pointer transition-all text-center font-medium">📧 Newsletter<br/>(8PM)</div>
+                                <div class="p-4 bg-indigo-100 rounded-xl hover:bg-indigo-200 cursor-pointer transition-all text-center font-medium">🔬 Research</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-6 text-gray-800">⚡ Algorithms Matrix</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full bg-gray-50 rounded-2xl border border-gray-200 text-sm">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="p-3 font-bold text-left">Task</th>
+                                            <th class="p-3 font-bold text-left">Algorithm</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="hover:bg-white border-b">
+                                            <td class="p-3 font-medium">Crawling</td>
+                                            <td class="p-3">BFS</td>
+                                        </tr>
+                                        <tr class="hover:bg-white border-b">
+                                            <td class="p-3 font-medium">Deduplication</td>
+                                            <td class="p-3">MinHash</td>
+                                        </tr>
+                                        <tr class="hover:bg-white border-b">
+                                            <td class="p-3 font-medium">Classification</td>
+                                            <td class="p-3">BERT</td>
+                                        </tr>
+                                        <tr class="hover:bg-white">
+                                            <td class="p-3 font-medium">Security</td>
+                                            <td class="p-3">Isolation Forest</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Security & ML Vulnerability -->
+                <section id="security" class="section-content card">
+                    <div class="bg-gradient-to-r from-rose-500 via-red-500 to-orange-500 text-white rounded-3xl p-12 shadow-2xl">
+                        <h2 class="text-4xl font-black mb-2">🛡️ Security & ML Vulnerability Detection</h2>
+                        <p class="text-xl opacity-95">Self-healing intelligent security system</p>
+                    </div>
+                    <div class="bg-white/80 backdrop-blur-md rounded-3xl p-12 shadow-2xl border border-rose-200/50 -mt-6 grid md:grid-cols-2 gap-12">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-6 text-gray-800">Detection Pipeline</h3>
+                            <div class="mermaid" id="security-diagram">
+                                graph LR
+                                    A[📊 System Logs] --> B[🔍 Feature Engineering]
+                                    B --> C[🤖 Isolation Forest<br/>Anomaly Detection]
+                                    C --> D[📈 Risk Scoring]
+                                    D -->|High Risk| E[⚡ Auto-Fix Engine]
+                                    D -->|Low| F[📋 Monitor]
+                                    E --> G[✅ Validate Fix]
+                                    G --> F
+                                    style A fill:#fef3c7
+                                    style E fill:#fecaca
+                                    style C fill:#dbeafe
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-xl font-bold mb-4 text-rose-800">🧠 ML Models</h4>
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div class="bg-rose-50 p-4 rounded-xl border border-rose-200">
+                                        <strong>Isolation Forest</strong><br/>
+                                        <small class="text-rose-700">Anomaly detection</small>
+                                    </div>
+                                    <div class="bg-rose-50 p-4 rounded-xl border border-rose-200">
+                                        <strong>BERT/LSTM</strong><br/>
+                                        <small class="text-rose-700">Log classification</small>
+                                    </div>
+                                    <div class="bg-orange-50 p-4 rounded-xl border border-orange-200">
+                                        <strong>XGBoost</strong><br/>
+                                        <small class="text-orange-700">Vuln prediction</small>
+                                    </div>
+                                    <div class="bg-orange-50 p-4 rounded-xl border border-orange-200">
+                                        <strong>GNN</strong><br/>
+                                        <small class="text-orange-700">Attack path detection</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-4 text-gray-800">🚀 Auto-Fix Examples</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center p-4 bg-gradient-to-r from-rose-500/10 to-orange-500/10 rounded-2xl border border-rose-200">
+                                        <div class="w-10 h-10 bg-rose-100 rounded-xl flex items-center justify-center mr-4">
+                                            <span class="text-lg">🛡️</span>
+                                        </div>
+                                        <div>
+                                            <strong class="text-rose-900">SQL Injection</strong>
+                                            <p class="text-sm text-gray-600">→ Parameterized queries</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center p-4 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-2xl border border-emerald-200">
+                                        <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center mr-4">
+                                            <span class="text-lg">⚡</span>
+                                        </div>
+                                        <div>
+                                            <strong class="text-emerald-900">API Abuse</strong>
+                                            <p class="text-sm text-gray-600">→ Token Bucket rate limit</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. System Architecture & Storage -->
+                <section id="architecture" class="section-content card">
+                    <div class="bg-gradient-to-r from-slate-500 to-gray-500 text-white rounded-3xl p-12 shadow-2xl">
+                        <h2 class="text-4xl font-black mb-2">🏗️ System Architecture</h2>
+                        <p class="text-xl opacity-95">Full stack + lifecycles</p>
+                    </div>
+                    <div class="bg-white rounded-3xl p-12 shadow-xl border border-gray-200/50 -mt-6 space-y-12">
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="text-center p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
+                                <h4 class="text-2xl font-bold text-blue-900 mb-4">Data Lifecycle</h4>
+                                <div class="text-sm space-y-2 text-gray-700">
+                                    <p>Ingest → Validate → Process → Store → Use → Archive</p>
+                                    <code class="block bg-blue-100 p-2 rounded text-xs font-mono mt-4">Kafka → Airflow → Postgres/ES → API</code>
+                                </div>
+                            </div>
+                            <div class="text-center p-8 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-emerald-200">
+                                <h4 class="text-2xl font-bold text-emerald-900 mb-4">ML Lifecycle</h4>
+                                <div class="text-sm space-y-2 text-gray-700">
+                                    <p>Train → Deploy → Monitor → Retrain</p>
+                                    <code class="block bg-emerald-100 p-2 rounded text-xs font-mono mt-4">MLflow + Feature Store</code>
+                                </div>
+                            </div>
+                            <div class="text-center p-8 bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl border border-purple-200">
+                                <h4 class="text-2xl font-bold text-purple-900 mb-4">App Lifecycle</h4>
+                                <div class="text-sm space-y-2 text-gray-700">
+                                    <p>Code → Build → Deploy → Scale</p>
+                                    <code class="block bg-purple-100 p-2 rounded text-xs font-mono mt-4">Docker/K8s + GitHub Actions</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-12">
+                            <div>
+                                <h3 class="text-2xl font-bold mb-6 text-gray-800">💾 Storage Design</h3>
+                                <div class="space-y-4 text-sm">
+                                    <div class="flex items-start p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all">
+                                        <div class="w-12 h-12 bg-blue-500 text-white rounded-xl flex items-center justify-center flex-shrink-0 mr-4 font-mono text-sm">PG</div>
+                                        <div>
+                                            <strong>PostgreSQL</strong>
+                                            <p>Articles, tags, logs, metadata</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all">
+                                        <div class="w-12 h-12 bg-emerald-500 text-white rounded-xl flex items-center justify-center flex-shrink-0 mr-4 font-mono text-sm">ES</div>
+                                        <div>
+                                            <strong>ElasticSearch</strong>
+                                            <p>Full-text search, inverted index</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all">
+                                        <div class="w-12 h-12 bg-orange-500 text-white rounded-xl flex items-center justify-center flex-shrink-0 mr-4 font-mono text-sm">S3</div>
+                                        <div>
+                                            <strong>S3 + Glacier</strong>
+                                            <p>Raw HTML, archival, vectors</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="text-2xl font-bold mb-6 text-gray-800">🚀 Core Components</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full bg-gradient-to-r from-gray-50 to-slate-50 rounded-2xl shadow-inner text-sm border">
+                                        <thead>
+                                            <tr class="bg-gradient-to-r from-slate-200 to-gray-200">
+                                                <th class="p-4 font-bold text-left rounded-tl-2xl">Layer</th>
+                                                <th class="p-4 font-bold text-left rounded-tr-2xl">Purpose</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-b hover:bg-white">
+                                                <td class="p-4 font-medium">Scraper</td>
+                                                <td class="p-4">Collect raw data</td>
+                                            </tr>
+                                            <tr class="border-b hover:bg-white">
+                                                <td class="p-4 font-medium">Pipeline</td>
+                                                <td class="p-4">Clean & transform</td>
+                                            </tr>
+                                            <tr class="border-b hover:bg-white">
+                                                <td class="p-4 font-medium">AI Engine</td>
+                                                <td class="p-4">LLM insights</td>
+                                            </tr>
+                                            <tr class="hover:bg-white">
+                                                <td class="p-4 font-medium">Dashboard</td>
+                                                <td class="p-4 rounded-bl-2xl">System control</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. Deployment & Next Steps -->
+                <section id="deployment" class="section-content card">
+                    <div class="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 text-white rounded-3xl p-12 shadow-2xl">
+                        <h2 class="text-4xl font-black mb-2">🚀 Deployment & Next Steps</h2>
+                        <p class="text-xl opacity-95">Production checklist + execution commands</p>
+                    </div>
+                    <div class="bg-white/90 backdrop-blur-lg rounded-3xl p-12 shadow-2xl border border-emerald-200/50 -mt-6">
+                        <div class="grid md:grid-cols-2 gap-12 mb-12">
+                            <!-- Interactive Checklist -->
+                            <div>
+                                <h3 class="text-2xl font-bold mb-8 text-emerald-900 flex items-center">
+                                    ✅ Deployment Checklist
+                                    <span class="ml-3 bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full text-sm font-semibold">8/14 Complete</span>
+                                </h3>
+                                <div class="space-y-3 max-h-96 overflow-y-auto pr-4">
+                                    <label class="flex items-center p-5 bg-emerald-50/50 rounded-2xl cursor-pointer hover:bg-emerald-100 transition-all border-2 border-emerald-200 hover:border-emerald-300">
+                                        <input type="checkbox" checked class="w-6 h-6 mr-4 rounded-lg text-emerald-600 bg-emerald-100 border-emerald-300 focus:ring-emerald-500">
+                                        <span class="font-medium text-gray-800">Dockerize ai-legal-news-agent</span>
+                                    </label>
+                                    <label class="flex items-center p-5 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition-all border-2 border-gray-200 hover:border-gray-300">
+                                        <input type="checkbox" class="w-6 h-6 mr-4 rounded-lg text-emerald-600 bg-white border-gray-300 focus:ring-emerald-500">
+                                        <span class="font-medium text-gray-800">Kubernetes manifests</span>
+                                    </label>
+                                    <label class="flex items-center p-5 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition-all border-2 border-gray-200 hover:border-gray-300">
+                                        <input type="checkbox" class="w-6 h-6 mr-4 rounded-lg text-emerald-600 bg-white border-gray-300 focus:ring-emerald-500">
+                                        <span class="font-medium text-gray-800">CI/CD GitHub Actions</span>
+                                    </label>
+                                    <!-- More checkboxes... -->
+                                </div>
+                            </div>
+                            
+                            <!-- Commands Terminal -->
+                            <div>
+                                <h3 class="text-2xl font-bold mb-8 text-gray-800">💻 Execution Commands</h3>
+                                <div class="bg-black/90 text-green-400 p-8 rounded-3xl font-mono text-sm shadow-2xl">
+                                    <div class="mb-4 flex items-center">
+                                        <span class="w-3 h-3 bg-green-500 rounded-full mr-3"></span>
+                                        <span>user@lexnexhub:~$</span>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <code>pip install -r requirements.txt</code>
+                                        <code>playwright install</code>
+                                        <code>ollama pull llama3</code>
+                                        <div class="pl-6 border-l-4 border-emerald-500 bg-black/50 p-3 rounded">
+                                            <code>python main.py full --with-embeddings</code>
+                                        </div>
+                                        <code>pytest tests/</code>
+                                        <code>docker build -t lexnexhub .</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Final CTA -->
+                        <div class="text-center pt-12 border-t border-gray-200">
+                            <h3 class="text-3xl font-black text-gray-800 mb-6">Ready to Launch Phase 1 🚀</h3>
+                            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                                All systems designed. Pipeline self-healing. Security ML-powered. 
+                                Execute commands above to deploy.
+                            </p>
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                                <button class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-12 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-300">
+                                    🏃‍♂️ Run Pipeline Now
+                                </button>
+                                <button class="border-2 border-indigo-500 text-indigo-600 hover:bg-indigo-500 hover:text-white px-12 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+                                    📋 Full Spec PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'default',
+            themeVariables: { primaryColor: '#e0f2fe', primaryTextColor: '#1e293b' }
+        });
+
+        // Navigation data with ALL sections from MD
+        const navItems = [
+            { id: 'objectives', title: '🎯 Objectives & KPIs', icon: '📊' },
+            { id: 'workflow', title: '🔄 Core Workflow', icon: '📈' },
+            { id: 'sources', title: '📡 Data Sources', icon: '🌐' },
+            { id: 'pipeline', title: '⚙️ Processing Pipeline', icon: '🔧' },
+            { id: 'architecture', title: '🏗️ System Architecture', icon: '🧱' },
+            { id: 'security', title: '🛡️ Security/ML Detection', icon: '🧠' },
+            { id: 'frontend', title: '🎨 Frontend/Backend', icon: '💻' },
+            { id: 'deployment', title: '🚀 Deployment', icon: '⚙️' }
+        ];
+
+        // Populate TOC
+        const tocNav = document.getElementById('toc-nav');
+        navItems.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = 'w-full text-left p-4 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 rounded-2xl transition-all font-medium text-gray-700 hover:text-indigo-700 hover:shadow-md flex items-center space-x-3 group';
+            btn.innerHTML = `<span class="text-xl group-hover:scale-110 transition-transform">${item.icon}</span><span>${item.title}</span>`;
+            btn.onclick = () => showSection(item.id);
+            tocNav.appendChild(btn);
+        });
+
+        // Show section function
+        function showSection(id) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+            document.getElementById(id)?.classList.add('active');
+            
+            // Scroll to section
+            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Update progress (mock based on section index)
+            const index = navItems.findIndex(n => n.id === id);
+            const progress = Math.max(20, (index + 1) / navItems.length * 80);
+            document.documentElement.style.setProperty('--progress', `${progress}%`);
+        }
+
+        // Copy code functionality
+        function copyCode(btn) {
+            const code = btn.parentElement.querySelector('pre').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.classList.add('bg-green-500', 'text-white');
+                setTimeout(() => {
+                    btn.textContent = original;
+                    btn.classList.remove('bg-green-500', 'text-white');
+                }, 2000);
+            });
+        }
+
+        // Checkbox progress update
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', updateChecklistProgress);
+        });
+
+        function updateChecklistProgress() {
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const total = document.querySelectorAll('input[type="checkbox"]').length;
+            const checklistProgress = (checked / total) * 20; // 20% from checklist
+            document.documentElement.style.setProperty('--progress', `${checklistProgress + 30}%`); // Base 30%
+        }
+
+        // Keyboard navigation
+        let currentIndex = 0;
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowDown' && currentIndex < navItems.length - 1) {
+                currentIndex++;
+                showSection(navItems[currentIndex].id);
+            } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+                currentIndex--;
+                showSection(navItems[currentIndex].id);
+            }
+        });
+
+        // Initialize first section
+        showSection('objectives');
+    </script>
+</body>
+</html>
