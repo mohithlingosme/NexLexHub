@@ -25,7 +25,9 @@ class AskResponse(BaseModel):
 @app.post("/ask", response_model=AskResponse)
 async def ask(request: AskRequest):
     try:
-        answer, used_ollama = answer_with_context_meta(request.question)
+        from ai.rag import retrieve
+        contexts = retrieve(request.question, k=4)
+        answer, used_ollama = answer_with_context_meta(request.question, contexts)
         return AskResponse(answer=answer, used_ollama=used_ollama, sources=["rag"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,7 +1,7 @@
 # Implementation Plan for LexNexHub Phase 1 Documentation Refactor
 
 ## Overview
-Convert the raw specification in 'production/pharse 1' into a comprehensive, actionable deep implementation blueprint preserving all sections (objectives, workflow, pipeline, architecture, security/ML vuln detection) while enhancing structure, schemas, diagrams, and checklists for developer execution. This creates a maintainable single source of truth aligned with ai-legal-news-agent codebase.
+Convert the raw specification in 'production/phase_01.md' into a comprehensive, actionable deep implementation blueprint preserving all sections (objectives, workflow, pipeline, architecture, security/ML vuln detection) while enhancing structure, schemas, diagrams, and checklists for developer execution. This creates a maintainable single source of truth aligned with ai-legal-news-agent codebase.
 
 ## Types
 - **ArticleRaw**: { \"type\": \"object\", \"properties\": { \"url\": {\"type\": \"string\"}, \"title\": {\"type\": \"string\"}, \"content\": {\"type\": \"string\"}, \"date\": {\"type\": \"string\"}, \"category\": {\"type\": \"string\"}, \"scraped_at\": {\"type\": \"string\"} }, \"required\": [\"url\",\"title\",\"content\"] }
@@ -9,7 +9,7 @@ Convert the raw specification in 'production/pharse 1' into a comprehensive, act
 - **SecurityEvent**: { \"type\": \"object\", \"properties\": { \"type\": {\"type\": \"string\", \"enum\": [\"anomaly\",\"attack\",\"drift\"]}, \"risk_score\": {\"type\": \"number\"}, \"timestamp\": {\"type\": \"string\"}, \"details\": {\"type\": \"object\"} } }
 
 ## Files
-- Modify: production/pharse 1 (full structured rewrite).
+- Modify: production/phase_01.md (full structured rewrite).
 - New: None.
 
 ## Functions
@@ -32,7 +32,7 @@ Add to requirements.txt: scikit-learn==1.5.0, pydantic==2.8.0, fastapi==0.115.0,
 Extend tests/test_pipeline.py with schema asserts, E2E runs, anomaly injection.
 
 ## Implementation Order
-1. Refactor production/pharse 1
+1. Refactor production/phase_01.md
 2. Validate Markdown
 3. Update TODO.md
 4. Complete
