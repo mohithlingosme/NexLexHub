@@ -24,7 +24,7 @@ COURTS = {
 
 
 def create_path(court, year):
-    base = "Judicial Precedent/High Courts"
+    base = "Assets/Judicial_precedent/Raw_data/High court"
     path = f"{base}/{court}/{year}"
     os.makedirs(path, exist_ok=True)
     return path

@@ -1,0 +1,26 @@
+{
+  "root": "C:\\Users\\mohit\\Documents\\GitHub\\NexLexHub\\tools",
+  "python": {
+    "nodes": [
+      "graphify.py"
+    ],
+    "edges": []
+  },
+  "tree": {
+    "nodes": [
+      "./",
+      "GRAPH.md",
+      "graphify.py"
+    ],
+    "edges": [
+      {
+        "from": "./",
+        "to": "GRAPH.md"
+      },
+      {
+        "from": "./",
+        "to": "graphify.py"
+      }
+    ]
+  }
+}

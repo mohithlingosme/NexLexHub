@@ -1,0 +1,1066 @@
+{
+  "schema_version": "1.0",
+  "root": "C:\\Users\\mohit\\Documents\\GitHub\\NexLexHub",
+  "python": {
+    "nodes": [
+      "2_embed_store.py",
+      "3_query_rag.py",
+      "4_api.py",
+      "Assets/Judicial_precedent/scraper/Company_law_board_Scraper.py",
+      "Assets/Judicial_precedent/scraper/HC/Scraper.py",
+      "Assets/Judicial_precedent/scraper/HC/__init__.py",
+      "Assets/Judicial_precedent/scraper/Scraper.py",
+      "Assets/Judicial_precedent/scraper/__init__.py",
+      "Assets/Judicial_precedent/scraper/tribunals/Company_law_board_Scraper.py",
+      "Assets/Judicial_precedent/scraper/tribunals/Scraper_Cegat.py",
+      "Assets/Judicial_precedent/scraper/tribunals/Scraper_electricity_case.py",
+      "Assets/Judicial_precedent/scraper/tribunals/__init__.py",
+      "Assets/Judicial_precedent/scraper/tribunals/debt_recovery_appellate_tribunal_Scraper.py.py",
+      "Assets/ai-legal-news-agent/ai/__init__.py",
+      "Assets/ai-legal-news-agent/ai/embed.py",
+      "Assets/ai-legal-news-agent/ai/ollama_client.py",
+      "Assets/ai-legal-news-agent/ai/rag.py",
+      "Assets/ai-legal-news-agent/ai/summarize.py",
+      "Assets/ai-legal-news-agent/config.py",
+      "Assets/ai-legal-news-agent/main.py",
+      "Assets/ai-legal-news-agent/pipeline/__init__.py",
+      "Assets/ai-legal-news-agent/pipeline/chunker.py",
+      "Assets/ai-legal-news-agent/pipeline/cleaner.py",
+      "Assets/ai-legal-news-agent/pipeline/deduplicator.py",
+      "Assets/ai-legal-news-agent/pipeline/processor.py",
+      "Assets/ai-legal-news-agent/scraper/__init__.py",
+      "Assets/ai-legal-news-agent/scraper/barbench_scraper.py",
+      "Assets/ai-legal-news-agent/scraper/indiakanoon_scraper.py",
+      "Assets/ai-legal-news-agent/scraper/livelaw_scraper.py",
+      "Assets/ai-legal-news-agent/server.py",
+      "Assets/ai-legal-news-agent/tests/__init__.py",
+      "Assets/ai-legal-news-agent/tests/test_pipeline.py",
+      "Assets/ai-legal-news-agent/utils/__init__.py",
+      "Assets/ai-legal-news-agent/utils/date_parser.py",
+      "Assets/ai-legal-news-agent/utils/file_utils.py",
+      "Assets/ai-legal-news-agent/utils/http_utils.py",
+      "Assets/ai-legal-news-agent/utils/json_utils.py",
+      "Assets/ai-legal-news-agent/utils/vector_utils.py",
+      "Pharse_1/Core_pipeline.py",
+      "Pharse_1/Neural_Scheme.py",
+      "Pharse_1/Scraper/Bar&Bentch_Scraper.py",
+      "Pharse_1/Scraper/Live_Law/High Court/Karnataka_HC.py",
+      "Pharse_1/Scraper/Live_Law/High Court/__init__.py",
+      "Pharse_1/Scraper/Live_Law/SC.py",
+      "Pharse_1/Scraper/Live_Law/__init__.py",
+      "Pharse_1/Scraper/__init__.py",
+      "python-service/main.py",
+      "tools/graphify.py",
+      "tools/test_graphify.py"
+    ],
+    "edges": [
+      {
+        "from": "2_embed_store.py",
+        "to": "Assets/ai-legal-news-agent/ai/embed.py"
+      },
+      {
+        "from": "3_query_rag.py",
+        "to": "Assets/ai-legal-news-agent/ai/rag.py"
+      },
+      {
+        "from": "4_api.py",
+        "to": "Assets/ai-legal-news-agent/ai/rag.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/embed.py",
+        "to": "Assets/ai-legal-news-agent/ai/ollama_client.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/embed.py",
+        "to": "Assets/ai-legal-news-agent/utils/file_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/embed.py",
+        "to": "Assets/ai-legal-news-agent/utils/vector_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/ollama_client.py",
+        "to": "Assets/ai-legal-news-agent/utils/http_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/rag.py",
+        "to": "Assets/ai-legal-news-agent/ai/ollama_client.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/rag.py",
+        "to": "Assets/ai-legal-news-agent/utils/file_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/rag.py",
+        "to": "Assets/ai-legal-news-agent/utils/vector_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/summarize.py",
+        "to": "Assets/ai-legal-news-agent/ai/ollama_client.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/summarize.py",
+        "to": "Assets/ai-legal-news-agent/utils/file_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/summarize.py",
+        "to": "Assets/ai-legal-news-agent/utils/json_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/main.py",
+        "to": "Assets/ai-legal-news-agent/pipeline/processor.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/chunker.py",
+        "to": "Assets/ai-legal-news-agent/utils/file_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/cleaner.py",
+        "to": "Assets/ai-legal-news-agent/utils/file_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/deduplicator.py",
+        "to": "Assets/ai-legal-news-agent/utils/file_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/processor.py",
+        "to": "Assets/Judicial_precedent/scraper/__init__.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/processor.py",
+        "to": "Assets/ai-legal-news-agent/ai/embed.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/processor.py",
+        "to": "Assets/ai-legal-news-agent/ai/summarize.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/processor.py",
+        "to": "Assets/ai-legal-news-agent/pipeline/chunker.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/processor.py",
+        "to": "Assets/ai-legal-news-agent/pipeline/cleaner.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/processor.py",
+        "to": "Assets/ai-legal-news-agent/pipeline/deduplicator.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/processor.py",
+        "to": "Assets/ai-legal-news-agent/scraper/__init__.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/scraper/barbench_scraper.py",
+        "to": "Assets/ai-legal-news-agent/utils/date_parser.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/scraper/livelaw_scraper.py",
+        "to": "Assets/ai-legal-news-agent/utils/date_parser.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/scraper/livelaw_scraper.py",
+        "to": "Assets/ai-legal-news-agent/utils/file_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/server.py",
+        "to": "Assets/ai-legal-news-agent/ai/rag.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/server.py",
+        "to": "Assets/ai-legal-news-agent/pipeline/processor.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/tests/test_pipeline.py",
+        "to": "Assets/ai-legal-news-agent/pipeline/chunker.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/tests/test_pipeline.py",
+        "to": "Assets/ai-legal-news-agent/pipeline/cleaner.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/tests/test_pipeline.py",
+        "to": "Assets/ai-legal-news-agent/pipeline/deduplicator.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/tests/test_pipeline.py",
+        "to": "Assets/ai-legal-news-agent/utils/file_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/utils/vector_utils.py",
+        "to": "Assets/ai-legal-news-agent/utils/file_utils.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/Bar&Bentch_Scraper.py",
+        "to": "Assets/ai-legal-news-agent/utils/date_parser.py"
+      }
+    ]
+  },
+  "tree": {
+    "nodes": [
+      "./",
+      "2_embed_store.py",
+      "3_query_rag.py",
+      "4_api.py",
+      "Assets/",
+      "Assets/Journalism_Agen/",
+      "Assets/Journalism_Agen/articles.json/",
+      "Assets/Journalism_Agen/articles.json/articles.json",
+      "Assets/Judicial_precedent/",
+      "Assets/Judicial_precedent/Raw_data/",
+      "Assets/Judicial_precedent/Raw_data/High court/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2005/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2006/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2007/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2008/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2009/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2010/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2011/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2012/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2013/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2014/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2015/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2016/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2017/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2018/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2019/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2020/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2021/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2022/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2023/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2024/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2025/",
+      "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2026/",
+      "Assets/Judicial_precedent/scraper/",
+      "Assets/Judicial_precedent/scraper/Company_law_board_Scraper.py",
+      "Assets/Judicial_precedent/scraper/Experiment/",
+      "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/",
+      "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/.pre-commit-config.yaml",
+      "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/README.md",
+      "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/src/",
+      "Assets/Judicial_precedent/scraper/HC/",
+      "Assets/Judicial_precedent/scraper/HC/Scraper.py",
+      "Assets/Judicial_precedent/scraper/HC/__init__.py",
+      "Assets/Judicial_precedent/scraper/Scraper.py",
+      "Assets/Judicial_precedent/scraper/__init__.py",
+      "Assets/Judicial_precedent/scraper/tribunals/",
+      "Assets/Judicial_precedent/scraper/tribunals/Company_law_board_Scraper.py",
+      "Assets/Judicial_precedent/scraper/tribunals/Scraper_Cegat.py",
+      "Assets/Judicial_precedent/scraper/tribunals/Scraper_electricity_case.py",
+      "Assets/Judicial_precedent/scraper/tribunals/__init__.py",
+      "Assets/Judicial_precedent/scraper/tribunals/debt_recovery_appellate_tribunal_Scraper.py.py",
+      "Assets/ai-legal-news-agent/",
+      "Assets/ai-legal-news-agent/README.md",
+      "Assets/ai-legal-news-agent/ai/",
+      "Assets/ai-legal-news-agent/ai/__init__.py",
+      "Assets/ai-legal-news-agent/ai/embed.py",
+      "Assets/ai-legal-news-agent/ai/ollama_client.py",
+      "Assets/ai-legal-news-agent/ai/rag.py",
+      "Assets/ai-legal-news-agent/ai/summarize.py",
+      "Assets/ai-legal-news-agent/config.py",
+      "Assets/ai-legal-news-agent/data/",
+      "Assets/ai-legal-news-agent/data/chunks/",
+      "Assets/ai-legal-news-agent/data/chunks/chunk_0.json",
+      "Assets/ai-legal-news-agent/data/chunks/chunk_1.json",
+      "Assets/ai-legal-news-agent/data/chunks/chunk_2.json",
+      "Assets/ai-legal-news-agent/data/chunks/chunk_3.json",
+      "Assets/ai-legal-news-agent/data/chunks/chunk_4.json",
+      "Assets/ai-legal-news-agent/data/chunks/chunk_5.json",
+      "Assets/ai-legal-news-agent/data/processed/",
+      "Assets/ai-legal-news-agent/data/processed/clean_articles.json",
+      "Assets/ai-legal-news-agent/data/processed/deduplicated_articles.json",
+      "Assets/ai-legal-news-agent/data/processed/vector_store.json",
+      "Assets/ai-legal-news-agent/data/raw/",
+      "Assets/ai-legal-news-agent/data/raw/articles.json",
+      "Assets/ai-legal-news-agent/main.py",
+      "Assets/ai-legal-news-agent/pipeline/",
+      "Assets/ai-legal-news-agent/pipeline/__init__.py",
+      "Assets/ai-legal-news-agent/pipeline/chunker.py",
+      "Assets/ai-legal-news-agent/pipeline/cleaner.py",
+      "Assets/ai-legal-news-agent/pipeline/deduplicator.py",
+      "Assets/ai-legal-news-agent/pipeline/processor.py",
+      "Assets/ai-legal-news-agent/requirements.txt",
+      "Assets/ai-legal-news-agent/scraper/",
+      "Assets/ai-legal-news-agent/scraper/__init__.py",
+      "Assets/ai-legal-news-agent/scraper/barbench_scraper.py",
+      "Assets/ai-legal-news-agent/scraper/indiakanoon_scraper.py",
+      "Assets/ai-legal-news-agent/scraper/livelaw_scraper.py",
+      "Assets/ai-legal-news-agent/server.py",
+      "Assets/ai-legal-news-agent/tests/",
+      "Assets/ai-legal-news-agent/tests/__init__.py",
+      "Assets/ai-legal-news-agent/tests/test_pipeline.py",
+      "Assets/ai-legal-news-agent/utils/",
+      "Assets/ai-legal-news-agent/utils/__init__.py",
+      "Assets/ai-legal-news-agent/utils/date_parser.py",
+      "Assets/ai-legal-news-agent/utils/file_utils.py",
+      "Assets/ai-legal-news-agent/utils/http_utils.py",
+      "Assets/ai-legal-news-agent/utils/json_utils.py",
+      "Assets/ai-legal-news-agent/utils/vector_utils.py",
+      "Assets/backend-php/",
+      "Assets/backend-php/api/",
+      "Assets/backend-php/api/acts.php",
+      "Assets/backend-php/api/admin.php",
+      "Assets/backend-php/api/applications.php",
+      "Assets/backend-php/api/auth.php",
+      "Assets/backend-php/api/files.php",
+      "Assets/backend-php/api/invites.php",
+      "Assets/backend-php/api/news.php",
+      "Assets/backend-php/api/posts.php",
+      "Assets/backend-php/api/sections.php",
+      "Assets/backend-php/config/",
+      "Assets/backend-php/config/database.php",
+      "Assets/backend-php/index.php",
+      "Assets/backend-php/utils/",
+      "Assets/backend-php/utils/helpers.php",
+      "Assets/database/",
+      "Assets/frontend/",
+      "Assets/frontend/assets/",
+      "GRAPH.md",
+      "GRAPH_test.md",
+      "Pharse_1/",
+      "Pharse_1/Core_pipeline.py",
+      "Pharse_1/Dev_plan.txt",
+      "Pharse_1/Neural_Scheme.md",
+      "Pharse_1/Neural_Scheme.py",
+      "Pharse_1/README.md",
+      "Pharse_1/Scraper/",
+      "Pharse_1/Scraper/Bar&Bentch_Scraper.py",
+      "Pharse_1/Scraper/Data/",
+      "Pharse_1/Scraper/Data/Cleaned data/",
+      "Pharse_1/Scraper/Data/Raw_Data/",
+      "Pharse_1/Scraper/Data/Raw_Data/SC_articles.json",
+      "Pharse_1/Scraper/Data/Raw_Data/articles.json",
+      "Pharse_1/Scraper/Live_Law/",
+      "Pharse_1/Scraper/Live_Law/Data/",
+      "Pharse_1/Scraper/Live_Law/Data/Raw_Data/",
+      "Pharse_1/Scraper/Live_Law/Data/Raw_Data/SC_articles.json",
+      "Pharse_1/Scraper/Live_Law/High Court/",
+      "Pharse_1/Scraper/Live_Law/High Court/Karnataka_HC.py",
+      "Pharse_1/Scraper/Live_Law/High Court/__init__.py",
+      "Pharse_1/Scraper/Live_Law/SC.py",
+      "Pharse_1/Scraper/Live_Law/__init__.py",
+      "Pharse_1/Scraper/__init__.py",
+      "README.md",
+      "TODO.md",
+      "TODO_fix.md",
+      "TODO_structure_fix.md",
+      "config.php",
+      "production/",
+      "production/implementation_plan.md",
+      "production/phase_01.md",
+      "production/phase_02.md",
+      "production/phase_03.md",
+      "production/phase_04.md",
+      "production/phase_05.md",
+      "production/phase_06.md",
+      "production/phase_07.md",
+      "production/phase_08.md",
+      "production/phase_09.md",
+      "production/phase_10.md",
+      "production/planning.md",
+      "production/pp.md",
+      "production/product_plan.md",
+      "python-service/",
+      "python-service/main.py",
+      "python-service/requirements.txt",
+      "requirements.txt",
+      "tools/",
+      "tools/GRAPH.md",
+      "tools/graphify.py",
+      "tools/implementation_plan.md",
+      "tools/test_graphify.py"
+    ],
+    "edges": [
+      {
+        "from": "./",
+        "to": "2_embed_store.py"
+      },
+      {
+        "from": "./",
+        "to": "3_query_rag.py"
+      },
+      {
+        "from": "./",
+        "to": "4_api.py"
+      },
+      {
+        "from": "./",
+        "to": "Assets/"
+      },
+      {
+        "from": "./",
+        "to": "GRAPH.md"
+      },
+      {
+        "from": "./",
+        "to": "GRAPH_test.md"
+      },
+      {
+        "from": "./",
+        "to": "Pharse_1/"
+      },
+      {
+        "from": "./",
+        "to": "README.md"
+      },
+      {
+        "from": "./",
+        "to": "TODO.md"
+      },
+      {
+        "from": "./",
+        "to": "TODO_fix.md"
+      },
+      {
+        "from": "./",
+        "to": "TODO_structure_fix.md"
+      },
+      {
+        "from": "./",
+        "to": "config.php"
+      },
+      {
+        "from": "./",
+        "to": "production/"
+      },
+      {
+        "from": "./",
+        "to": "python-service/"
+      },
+      {
+        "from": "./",
+        "to": "requirements.txt"
+      },
+      {
+        "from": "./",
+        "to": "tools/"
+      },
+      {
+        "from": "Assets/",
+        "to": "Assets/Journalism_Agen/"
+      },
+      {
+        "from": "Assets/",
+        "to": "Assets/Judicial_precedent/"
+      },
+      {
+        "from": "Assets/",
+        "to": "Assets/ai-legal-news-agent/"
+      },
+      {
+        "from": "Assets/",
+        "to": "Assets/backend-php/"
+      },
+      {
+        "from": "Assets/",
+        "to": "Assets/database/"
+      },
+      {
+        "from": "Assets/",
+        "to": "Assets/frontend/"
+      },
+      {
+        "from": "Assets/Journalism_Agen/",
+        "to": "Assets/Journalism_Agen/articles.json/"
+      },
+      {
+        "from": "Assets/Journalism_Agen/articles.json/",
+        "to": "Assets/Journalism_Agen/articles.json/articles.json"
+      },
+      {
+        "from": "Assets/Judicial_precedent/",
+        "to": "Assets/Judicial_precedent/Raw_data/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/",
+        "to": "Assets/Judicial_precedent/scraper/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/",
+        "to": "Assets/Judicial_precedent/Raw_data/High court/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2005/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2006/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2007/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2008/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2009/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2010/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2011/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2012/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2013/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2014/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2015/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2016/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2017/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2018/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2019/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2020/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2021/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2022/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2023/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2024/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2025/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/",
+        "to": "Assets/Judicial_precedent/Raw_data/tribunals/Electricity_Appellate_Tribunal/2026/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/",
+        "to": "Assets/Judicial_precedent/scraper/Company_law_board_Scraper.py"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/",
+        "to": "Assets/Judicial_precedent/scraper/Experiment/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/",
+        "to": "Assets/Judicial_precedent/scraper/HC/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/",
+        "to": "Assets/Judicial_precedent/scraper/Scraper.py"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/",
+        "to": "Assets/Judicial_precedent/scraper/__init__.py"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/",
+        "to": "Assets/Judicial_precedent/scraper/tribunals/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/Experiment/",
+        "to": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/",
+        "to": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/.pre-commit-config.yaml"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/",
+        "to": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/README.md"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/",
+        "to": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/src/"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/HC/",
+        "to": "Assets/Judicial_precedent/scraper/HC/Scraper.py"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/HC/",
+        "to": "Assets/Judicial_precedent/scraper/HC/__init__.py"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/tribunals/",
+        "to": "Assets/Judicial_precedent/scraper/tribunals/Company_law_board_Scraper.py"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/tribunals/",
+        "to": "Assets/Judicial_precedent/scraper/tribunals/Scraper_Cegat.py"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/tribunals/",
+        "to": "Assets/Judicial_precedent/scraper/tribunals/Scraper_electricity_case.py"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/tribunals/",
+        "to": "Assets/Judicial_precedent/scraper/tribunals/__init__.py"
+      },
+      {
+        "from": "Assets/Judicial_precedent/scraper/tribunals/",
+        "to": "Assets/Judicial_precedent/scraper/tribunals/debt_recovery_appellate_tribunal_Scraper.py.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/README.md"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/ai/"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/config.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/data/"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/main.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/pipeline/"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/requirements.txt"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/scraper/"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/server.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/tests/"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/",
+        "to": "Assets/ai-legal-news-agent/utils/"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/",
+        "to": "Assets/ai-legal-news-agent/ai/__init__.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/",
+        "to": "Assets/ai-legal-news-agent/ai/embed.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/",
+        "to": "Assets/ai-legal-news-agent/ai/ollama_client.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/",
+        "to": "Assets/ai-legal-news-agent/ai/rag.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/ai/",
+        "to": "Assets/ai-legal-news-agent/ai/summarize.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/",
+        "to": "Assets/ai-legal-news-agent/data/chunks/"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/",
+        "to": "Assets/ai-legal-news-agent/data/processed/"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/",
+        "to": "Assets/ai-legal-news-agent/data/raw/"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/chunks/",
+        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_0.json"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/chunks/",
+        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_1.json"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/chunks/",
+        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_2.json"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/chunks/",
+        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_3.json"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/chunks/",
+        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_4.json"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/chunks/",
+        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_5.json"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/processed/",
+        "to": "Assets/ai-legal-news-agent/data/processed/clean_articles.json"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/processed/",
+        "to": "Assets/ai-legal-news-agent/data/processed/deduplicated_articles.json"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/processed/",
+        "to": "Assets/ai-legal-news-agent/data/processed/vector_store.json"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/data/raw/",
+        "to": "Assets/ai-legal-news-agent/data/raw/articles.json"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/",
+        "to": "Assets/ai-legal-news-agent/pipeline/__init__.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/",
+        "to": "Assets/ai-legal-news-agent/pipeline/chunker.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/",
+        "to": "Assets/ai-legal-news-agent/pipeline/cleaner.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/",
+        "to": "Assets/ai-legal-news-agent/pipeline/deduplicator.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/pipeline/",
+        "to": "Assets/ai-legal-news-agent/pipeline/processor.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/scraper/",
+        "to": "Assets/ai-legal-news-agent/scraper/__init__.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/scraper/",
+        "to": "Assets/ai-legal-news-agent/scraper/barbench_scraper.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/scraper/",
+        "to": "Assets/ai-legal-news-agent/scraper/indiakanoon_scraper.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/scraper/",
+        "to": "Assets/ai-legal-news-agent/scraper/livelaw_scraper.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/tests/",
+        "to": "Assets/ai-legal-news-agent/tests/__init__.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/tests/",
+        "to": "Assets/ai-legal-news-agent/tests/test_pipeline.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/utils/",
+        "to": "Assets/ai-legal-news-agent/utils/__init__.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/utils/",
+        "to": "Assets/ai-legal-news-agent/utils/date_parser.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/utils/",
+        "to": "Assets/ai-legal-news-agent/utils/file_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/utils/",
+        "to": "Assets/ai-legal-news-agent/utils/http_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/utils/",
+        "to": "Assets/ai-legal-news-agent/utils/json_utils.py"
+      },
+      {
+        "from": "Assets/ai-legal-news-agent/utils/",
+        "to": "Assets/ai-legal-news-agent/utils/vector_utils.py"
+      },
+      {
+        "from": "Assets/backend-php/",
+        "to": "Assets/backend-php/api/"
+      },
+      {
+        "from": "Assets/backend-php/",
+        "to": "Assets/backend-php/config/"
+      },
+      {
+        "from": "Assets/backend-php/",
+        "to": "Assets/backend-php/index.php"
+      },
+      {
+        "from": "Assets/backend-php/",
+        "to": "Assets/backend-php/utils/"
+      },
+      {
+        "from": "Assets/backend-php/api/",
+        "to": "Assets/backend-php/api/acts.php"
+      },
+      {
+        "from": "Assets/backend-php/api/",
+        "to": "Assets/backend-php/api/admin.php"
+      },
+      {
+        "from": "Assets/backend-php/api/",
+        "to": "Assets/backend-php/api/applications.php"
+      },
+      {
+        "from": "Assets/backend-php/api/",
+        "to": "Assets/backend-php/api/auth.php"
+      },
+      {
+        "from": "Assets/backend-php/api/",
+        "to": "Assets/backend-php/api/files.php"
+      },
+      {
+        "from": "Assets/backend-php/api/",
+        "to": "Assets/backend-php/api/invites.php"
+      },
+      {
+        "from": "Assets/backend-php/api/",
+        "to": "Assets/backend-php/api/news.php"
+      },
+      {
+        "from": "Assets/backend-php/api/",
+        "to": "Assets/backend-php/api/posts.php"
+      },
+      {
+        "from": "Assets/backend-php/api/",
+        "to": "Assets/backend-php/api/sections.php"
+      },
+      {
+        "from": "Assets/backend-php/config/",
+        "to": "Assets/backend-php/config/database.php"
+      },
+      {
+        "from": "Assets/backend-php/utils/",
+        "to": "Assets/backend-php/utils/helpers.php"
+      },
+      {
+        "from": "Assets/frontend/",
+        "to": "Assets/frontend/assets/"
+      },
+      {
+        "from": "Pharse_1/",
+        "to": "Pharse_1/Core_pipeline.py"
+      },
+      {
+        "from": "Pharse_1/",
+        "to": "Pharse_1/Dev_plan.txt"
+      },
+      {
+        "from": "Pharse_1/",
+        "to": "Pharse_1/Neural_Scheme.md"
+      },
+      {
+        "from": "Pharse_1/",
+        "to": "Pharse_1/Neural_Scheme.py"
+      },
+      {
+        "from": "Pharse_1/",
+        "to": "Pharse_1/README.md"
+      },
+      {
+        "from": "Pharse_1/",
+        "to": "Pharse_1/Scraper/"
+      },
+      {
+        "from": "Pharse_1/Scraper/",
+        "to": "Pharse_1/Scraper/Bar&Bentch_Scraper.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/",
+        "to": "Pharse_1/Scraper/Data/"
+      },
+      {
+        "from": "Pharse_1/Scraper/",
+        "to": "Pharse_1/Scraper/Live_Law/"
+      },
+      {
+        "from": "Pharse_1/Scraper/",
+        "to": "Pharse_1/Scraper/__init__.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/",
+        "to": "Pharse_1/Scraper/Data/Cleaned data/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/",
+        "to": "Pharse_1/Scraper/Data/Raw_Data/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Raw_Data/",
+        "to": "Pharse_1/Scraper/Data/Raw_Data/SC_articles.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Raw_Data/",
+        "to": "Pharse_1/Scraper/Data/Raw_Data/articles.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Live_Law/",
+        "to": "Pharse_1/Scraper/Live_Law/Data/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Live_Law/",
+        "to": "Pharse_1/Scraper/Live_Law/High Court/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Live_Law/",
+        "to": "Pharse_1/Scraper/Live_Law/SC.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/Live_Law/",
+        "to": "Pharse_1/Scraper/Live_Law/__init__.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/Live_Law/Data/",
+        "to": "Pharse_1/Scraper/Live_Law/Data/Raw_Data/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Live_Law/Data/Raw_Data/",
+        "to": "Pharse_1/Scraper/Live_Law/Data/Raw_Data/SC_articles.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Live_Law/High Court/",
+        "to": "Pharse_1/Scraper/Live_Law/High Court/Karnataka_HC.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/Live_Law/High Court/",
+        "to": "Pharse_1/Scraper/Live_Law/High Court/__init__.py"
+      },
+      {
+        "from": "production/",
+        "to": "production/implementation_plan.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/phase_01.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/phase_02.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/phase_03.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/phase_04.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/phase_05.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/phase_06.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/phase_07.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/phase_08.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/phase_09.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/phase_10.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/planning.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/pp.md"
+      },
+      {
+        "from": "production/",
+        "to": "production/product_plan.md"
+      },
+      {
+        "from": "python-service/",
+        "to": "python-service/main.py"
+      },
+      {
+        "from": "python-service/",
+        "to": "python-service/requirements.txt"
+      },
+      {
+        "from": "tools/",
+        "to": "tools/GRAPH.md"
+      },
+      {
+        "from": "tools/",
+        "to": "tools/graphify.py"
+      },
+      {
+        "from": "tools/",
+        "to": "tools/implementation_plan.md"
+      },
+      {
+        "from": "tools/",
+        "to": "tools/test_graphify.py"
+      }
+    ]
+  }
+}

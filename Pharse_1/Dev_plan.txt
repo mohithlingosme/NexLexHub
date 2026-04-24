@@ -1,0 +1,232 @@
+Development & Repository Structure Document
+🧭 1. Project Overview (Engineering View)
+
+LexNexHub is a distributed AI pipeline that:
+
+Scrapes → Filters → Chunks → Analyzes → Validates → Stores → Serves
+
+Goal:
+
+Convert unstructured legal data → structured intelligence
+Maintain accuracy, scalability, and low latency
+🏗️ 2. High-Level Architecture
+🔷 System Layers
+1. Data Layer
+Scrapers (LiveLaw, Bar & Bench)
+Deduplication (MinHash)
+2. Processing Layer
+Cleaning + Tokenization
+InLegalBERT filtering
+3. AI Layer
+Chunking (semantic + clause)
+DeepSeek reasoning
+4. QA Layer
+Grounding checks
+Scoring engine
+5. Storage Layer
+PostgreSQL
+ElasticSearch
+Vector DB (FAISS)
+6. API Layer
+FastAPI backend
+Next.js frontend
+📂 3. Repository Structure (Production-Ready)
+lexnexhub/
+│
+├── README.md
+├── docker-compose.yml
+├── requirements.txt
+├── .env
+│
+├── services/
+│   ├── scraper_service/
+│   │   ├── scraper.py
+│   │   ├── dedup.py
+│   │   └── producer.py
+│   │
+│   ├── filter_service/
+│   │   ├── model.py
+│   │   └── filter.py
+│   │
+│   ├── chunk_service/
+│   │   ├── semantic_chunk.py
+│   │   └── clause_chunk.py
+│   │
+│   ├── ai_service/
+│   │   ├── deepseek_client.py
+│   │   ├── prompt_templates.py
+│   │   └── processor.py
+│   │
+│   ├── qa_service/
+│   │   ├── scoring.py
+│   │   ├── grounding.py
+│   │   └── validator.py
+│   │
+│   ├── api_service/
+│   │   ├── main.py
+│   │   ├── routes/
+│   │   └── schemas/
+│   │
+│   └── auth_service/
+│       └── auth.py
+│
+├── pipelines/
+│   ├── kafka/
+│   │   ├── producer.py
+│   │   └── consumer.py
+│   │
+│   ├── airflow/
+│   │   └── dags.py
+│
+├── database/
+│   ├── postgres/
+│   │   └── schema.sql
+│   │
+│   ├── elasticsearch/
+│   │   └── index_config.json
+│   │
+│   └── vector_db/
+│       └── faiss_index.py
+│
+├── ml_models/
+│   ├── inlegalbert/
+│   ├── embeddings/
+│   └── fine_tuning/
+│
+├── utils/
+│   ├── logger.py
+│   ├── config.py
+│   └── helpers.py
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+│
+├── deployment/
+│   ├── docker/
+│   ├── kubernetes/
+│   ├── terraform/
+│   └── ci_cd/
+│
+└── docs/
+    ├── architecture.md
+    ├── api_docs.md
+    ├── ml_pipeline.md
+    └── dev_guide.md
+⚙️ 4. Development Phases (Execution Plan)
+🚀 Phase 1 – Core MVP (2–3 weeks)
+
+Build:
+
+Scraper
+Cleaning pipeline
+InLegalBERT filter
+Basic chunking
+DeepSeek integration
+PostgreSQL storage
+
+👉 Output: Working pipeline
+
+⚙️ Phase 2 – Systemization (2–4 weeks)
+
+Add:
+
+Kafka (event-driven pipeline)
+Microservices split
+API layer (FastAPI)
+ElasticSearch
+
+👉 Output: Scalable backend
+
+🧠 Phase 3 – Intelligence Layer (3–5 weeks)
+
+Add:
+
+Semantic chunking optimization
+Prompt engineering system
+QA scoring engine
+Vector DB (FAISS)
+🛡️ Phase 4 – Advanced Systems
+
+Add:
+
+LettuceDetect
+LUMINA
+Isolation Forest security
+GNN threat detection
+🔄 5. Data Flow (Implementation Logic)
+Scraper → Kafka Topic (raw_data)
+        ↓
+Filter Service → Kafka (filtered_data)
+        ↓
+Chunk Service → Kafka (chunks)
+        ↓
+AI Service → Kafka (processed_data)
+        ↓
+QA Service → Kafka (validated_data)
+        ↓
+DB + API → Frontend
+🧠 6. AI/ML Component Mapping
+Component	Tool
+Legal Classification	InLegalBERT
+Embeddings	SentenceTransformers
+Reasoning	DeepSeek-R1
+QA Detection	LettuceDetect (future)
+Statistical Validation	LUMINA (future)
+🗄️ 7. Database Design
+PostgreSQL (Main)
+cases:
+- id
+- title
+- summary
+- background
+- reasoning
+- principles
+- citations
+- ruling
+- created_at
+ElasticSearch
+Full-text search
+Fast retrieval (<50ms)
+Vector DB (FAISS)
+Semantic search
+Similar case retrieval
+🔐 8. DevSecOps Setup
+CI/CD
+GitHub Actions
+Run:
+Tests
+Linting
+Security scans
+Deployment
+Docker containers
+Kubernetes cluster
+Monitoring
+Prometheus
+Grafana
+🧪 9. Testing Strategy
+Unit Testing
+Each service independently
+Integration Testing
+Kafka pipeline
+End-to-End Testing
+
+Full flow:
+
+URL → Output JSON
+📊 10. Admin Dashboard Features
+Daily ingestion stats
+QA score tracking
+Model accuracy
+Error logs
+Reprocessing controls
+📦 11. Tech Stack Summary
+Layer	Tech
+Backend	FastAPI
+Frontend	Next.js
+Queue	Kafka
+DB	PostgreSQL
+Search	ElasticSearch
+ML	HuggingFace + DeepSeek
+Infra	Docker + Kubernetes

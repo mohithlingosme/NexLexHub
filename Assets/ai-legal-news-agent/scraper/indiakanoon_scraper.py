@@ -41,7 +41,7 @@ async def scrape(
             # Extract docs from search results
             docs = await page.locator(".doc_row").all()
             for doc in docs[:max_pages]:
-                title = await doc.locator(".title").text_content("")
+                title = await doc.locator(".title").text_content()
                 url = await doc.locator("a").get_attribute("href")
                 full_url = f"https://indiankanoon.org{url}" if url else ""
                 all_docs.append({
@@ -56,4 +56,3 @@ async def scrape(
         Path(out_file).parent.mkdir(exist_ok=True, parents=True)
         Path(out_file).write_text(json.dumps(all_docs, indent=2))
         return all_docs
-
