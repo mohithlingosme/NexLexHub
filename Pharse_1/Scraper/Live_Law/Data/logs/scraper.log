@@ -1,0 +1,100 @@
+2026-04-29 14:10:51,536 [INFO] Loaded 14 articles
+2026-04-29 14:11:28,695 [ERROR] Page 1 error: name 'page' is not defined
+2026-04-29 14:11:30,213 [INFO] Saved 14 articles to C:\Users\mohit\Documents\GitHub\NexLexHub\Pharse_1\Scraper\Live_Law\Data\Raw_Data\SC_articles.json
+2026-04-29 14:11:30,215 [INFO] Scrape complete. New: 0, Dups: 0, Recent checked: 0
+2026-04-29 14:12:48,176 [INFO] Loaded 14 articles
+2026-04-29 14:13:52,866 [INFO] Loaded 14 articles
+2026-04-29 14:14:15,860 [INFO] Page 1: 8 links found
+2026-04-29 14:14:16,210 [WARNING] Attempt 1 failed for https://www.livelaw.in/supreme-court/supreme-court-approves-shifting-of-deers-from-delhis-an-jha-park-to-rajasthan-directs-centre-to-frame-guidelines-on-wildlife-relocation-531992: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/supreme-court-approves-shifting-of-deers-from-delhis-an-jha-park-to-rajasthan-directs-centre-to-frame-guidelines-on-wildlife-relocation-531992
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/supreme-court-approves-shifting-of-deers-from-delhis-an-jha-park-to-rajasthan-directs-centre-to-frame-guidelines-on-wildlife-relocation-531992", waiting until "load"
+
+2026-04-29 14:14:16,217 [WARNING] Attempt 1 failed for https://www.livelaw.in/supreme-court/no-right-to-complete-tenure-if-appointment-is-subject-to-until-further-orders-supreme-court-532098: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/no-right-to-complete-tenure-if-appointment-is-subject-to-until-further-orders-supreme-court-532098
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/no-right-to-complete-tenure-if-appointment-is-subject-to-until-further-orders-supreme-court-532098", waiting until "load"
+
+2026-04-29 14:14:16,221 [WARNING] Attempt 1 failed for https://www.livelaw.in/supreme-court/rte-act-school-cannot-delay-admission-to-state-allotted-student-raising-dispute-on-eligibility-supreme-court-532074: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/rte-act-school-cannot-delay-admission-to-state-allotted-student-raising-dispute-on-eligibility-supreme-court-532074
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/rte-act-school-cannot-delay-admission-to-state-allotted-student-raising-dispute-on-eligibility-supreme-court-532074", waiting until "load"
+
+2026-04-29 14:14:16,224 [WARNING] Attempt 1 failed for https://www.livelaw.in/supreme-court/mp-hc-hearing-appeals-of-2013-14-supreme-court-suspends-sentence-of-murder-convict-citing-unlikelihood-of-early-hearing-532006: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/mp-hc-hearing-appeals-of-2013-14-supreme-court-suspends-sentence-of-murder-convict-citing-unlikelihood-of-early-hearing-532006
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/mp-hc-hearing-appeals-of-2013-14-supreme-court-suspends-sentence-of-murder-convict-citing-unlikelihood-of-early-hearing-532006", waiting until "load"
+
+2026-04-29 14:14:16,229 [WARNING] Attempt 1 failed for https://www.livelaw.in/supreme-court/trial-courts-must-call-reports-on-mitigating-aggravating-factors-in-potential-death-penalty-cases-before-sentencing-supreme-court-532083: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/trial-courts-must-call-reports-on-mitigating-aggravating-factors-in-potential-death-penalty-cases-before-sentencing-supreme-court-532083
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/trial-courts-must-call-reports-on-mitigating-aggravating-factors-in-potential-death-penalty-cases-before-sentencing-supreme-court-532083", waiting until "load"
+
+2026-04-29 14:14:16,233 [WARNING] Attempt 1 failed for https://www.livelaw.in/supreme-court/ibc-corporate-guarantee-qualifies-as-financial-debt-supreme-court-532150: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/ibc-corporate-guarantee-qualifies-as-financial-debt-supreme-court-532150
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/ibc-corporate-guarantee-qualifies-as-financial-debt-supreme-court-532150", waiting until "load"
+
+2026-04-29 14:14:16,293 [WARNING] Attempt 1 failed for https://www.livelaw.in/supreme-court/buyer-not-criminally-liable-for-purchasing-property-based-on-will-later-found-forged-supreme-court-532026: Page.goto: Navigation to "https://www.livelaw.in/supreme-court/buyer-not-criminally-liable-for-purchasing-property-based-on-will-later-found-forged-supreme-court-532026" is interrupted by another navigation to "https://www.livelaw.in/supreme-court/supreme-court-judgments-and-orders-quarterly-digest-arbitration-act-2025-532047"
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/buyer-not-criminally-liable-for-purchasing-property-based-on-will-later-found-forged-supreme-court-532026", waiting until "load"
+
+2026-04-29 14:14:18,332 [WARNING] Attempt 2 failed for https://www.livelaw.in/supreme-court/supreme-court-approves-shifting-of-deers-from-delhis-an-jha-park-to-rajasthan-directs-centre-to-frame-guidelines-on-wildlife-relocation-531992: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/supreme-court-approves-shifting-of-deers-from-delhis-an-jha-park-to-rajasthan-directs-centre-to-frame-guidelines-on-wildlife-relocation-531992
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/supreme-court-approves-shifting-of-deers-from-delhis-an-jha-park-to-rajasthan-directs-centre-to-frame-guidelines-on-wildlife-relocation-531992", waiting until "load"
+
+2026-04-29 14:14:18,342 [WARNING] Attempt 2 failed for https://www.livelaw.in/supreme-court/no-right-to-complete-tenure-if-appointment-is-subject-to-until-further-orders-supreme-court-532098: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/no-right-to-complete-tenure-if-appointment-is-subject-to-until-further-orders-supreme-court-532098
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/no-right-to-complete-tenure-if-appointment-is-subject-to-until-further-orders-supreme-court-532098", waiting until "load"
+
+2026-04-29 14:14:18,356 [WARNING] Attempt 2 failed for https://www.livelaw.in/supreme-court/rte-act-school-cannot-delay-admission-to-state-allotted-student-raising-dispute-on-eligibility-supreme-court-532074: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/rte-act-school-cannot-delay-admission-to-state-allotted-student-raising-dispute-on-eligibility-supreme-court-532074
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/rte-act-school-cannot-delay-admission-to-state-allotted-student-raising-dispute-on-eligibility-supreme-court-532074", waiting until "load"
+
+2026-04-29 14:14:18,368 [WARNING] Attempt 2 failed for https://www.livelaw.in/supreme-court/ibc-corporate-guarantee-qualifies-as-financial-debt-supreme-court-532150: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/ibc-corporate-guarantee-qualifies-as-financial-debt-supreme-court-532150
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/ibc-corporate-guarantee-qualifies-as-financial-debt-supreme-court-532150", waiting until "load"
+
+2026-04-29 14:14:18,376 [WARNING] Attempt 2 failed for https://www.livelaw.in/supreme-court/trial-courts-must-call-reports-on-mitigating-aggravating-factors-in-potential-death-penalty-cases-before-sentencing-supreme-court-532083: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/trial-courts-must-call-reports-on-mitigating-aggravating-factors-in-potential-death-penalty-cases-before-sentencing-supreme-court-532083
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/trial-courts-must-call-reports-on-mitigating-aggravating-factors-in-potential-death-penalty-cases-before-sentencing-supreme-court-532083", waiting until "load"
+
+2026-04-29 14:14:18,393 [WARNING] Attempt 2 failed for https://www.livelaw.in/supreme-court/mp-hc-hearing-appeals-of-2013-14-supreme-court-suspends-sentence-of-murder-convict-citing-unlikelihood-of-early-hearing-532006: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/mp-hc-hearing-appeals-of-2013-14-supreme-court-suspends-sentence-of-murder-convict-citing-unlikelihood-of-early-hearing-532006
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/mp-hc-hearing-appeals-of-2013-14-supreme-court-suspends-sentence-of-murder-convict-citing-unlikelihood-of-early-hearing-532006", waiting until "load"
+
+2026-04-29 14:14:20,908 [WARNING] Attempt 3 failed for https://www.livelaw.in/supreme-court/supreme-court-approves-shifting-of-deers-from-delhis-an-jha-park-to-rajasthan-directs-centre-to-frame-guidelines-on-wildlife-relocation-531992: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/supreme-court-approves-shifting-of-deers-from-delhis-an-jha-park-to-rajasthan-directs-centre-to-frame-guidelines-on-wildlife-relocation-531992
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/supreme-court-approves-shifting-of-deers-from-delhis-an-jha-park-to-rajasthan-directs-centre-to-frame-guidelines-on-wildlife-relocation-531992", waiting until "load"
+
+2026-04-29 14:14:20,927 [WARNING] Attempt 3 failed for https://www.livelaw.in/supreme-court/no-right-to-complete-tenure-if-appointment-is-subject-to-until-further-orders-supreme-court-532098: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/no-right-to-complete-tenure-if-appointment-is-subject-to-until-further-orders-supreme-court-532098
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/no-right-to-complete-tenure-if-appointment-is-subject-to-until-further-orders-supreme-court-532098", waiting until "load"
+
+2026-04-29 14:14:20,993 [WARNING] Attempt 3 failed for https://www.livelaw.in/supreme-court/rte-act-school-cannot-delay-admission-to-state-allotted-student-raising-dispute-on-eligibility-supreme-court-532074: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/rte-act-school-cannot-delay-admission-to-state-allotted-student-raising-dispute-on-eligibility-supreme-court-532074
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/rte-act-school-cannot-delay-admission-to-state-allotted-student-raising-dispute-on-eligibility-supreme-court-532074", waiting until "load"
+
+2026-04-29 14:14:21,123 [WARNING] Attempt 3 failed for https://www.livelaw.in/supreme-court/ibc-corporate-guarantee-qualifies-as-financial-debt-supreme-court-532150: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/ibc-corporate-guarantee-qualifies-as-financial-debt-supreme-court-532150
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/ibc-corporate-guarantee-qualifies-as-financial-debt-supreme-court-532150", waiting until "load"
+
+2026-04-29 14:14:21,177 [WARNING] Attempt 3 failed for https://www.livelaw.in/supreme-court/trial-courts-must-call-reports-on-mitigating-aggravating-factors-in-potential-death-penalty-cases-before-sentencing-supreme-court-532083: Page.goto: net::ERR_ABORTED at https://www.livelaw.in/supreme-court/trial-courts-must-call-reports-on-mitigating-aggravating-factors-in-potential-death-penalty-cases-before-sentencing-supreme-court-532083
+Call log:
+  - navigating to "https://www.livelaw.in/supreme-court/trial-courts-must-call-reports-on-mitigating-aggravating-factors-in-potential-death-penalty-cases-before-sentencing-supreme-court-532083", waiting until "load"
+
+2026-04-29 14:14:22,906 [ERROR] All retries failed for https://www.livelaw.in/supreme-court/supreme-court-approves-shifting-of-deers-from-delhis-an-jha-park-to-rajasthan-directs-centre-to-frame-guidelines-on-wildlife-relocation-531992
+2026-04-29 14:14:22,999 [ERROR] All retries failed for https://www.livelaw.in/supreme-court/no-right-to-complete-tenure-if-appointment-is-subject-to-until-further-orders-supreme-court-532098
+2026-04-29 14:14:23,139 [ERROR] All retries failed for https://www.livelaw.in/supreme-court/rte-act-school-cannot-delay-admission-to-state-allotted-student-raising-dispute-on-eligibility-supreme-court-532074
+2026-04-29 14:14:23,239 [ERROR] All retries failed for https://www.livelaw.in/supreme-court/ibc-corporate-guarantee-qualifies-as-financial-debt-supreme-court-532150
+2026-04-29 14:14:23,260 [ERROR] All retries failed for https://www.livelaw.in/supreme-court/trial-courts-must-call-reports-on-mitigating-aggravating-factors-in-potential-death-penalty-cases-before-sentencing-supreme-court-532083
+2026-04-29 14:14:29,014 [INFO] New: 'MP HC Hearing Appeals Of 2013-14' : Supreme Court...
+2026-04-29 14:14:29,088 [INFO] Saved 15 articles to C:\Users\mohit\Documents\GitHub\NexLexHub\Pharse_1\Scraper\Live_Law\Data\Raw_Data\SC_articles.json
+2026-04-29 14:14:31,856 [INFO] Saved 15 articles to C:\Users\mohit\Documents\GitHub\NexLexHub\Pharse_1\Scraper\Live_Law\Data\Raw_Data\SC_articles.json
+2026-04-29 14:14:31,868 [INFO] Scrape complete. New: 1, Dups: 2, Recent checked: 3
+2026-04-29 14:25:01,080 [INFO] Starting LiveLaw Supreme Court incremental scraper
+2026-04-29 14:25:15,089 [INFO] Page 1: 8 new | 0 skipped existing
+2026-04-29 14:25:47,277 [INFO] Added: Supreme Court Approves Shifting Of Deers From Delhi's AN Jha Park To Rajasthan, 
+2026-04-29 14:25:47,302 [INFO] Added: RTE Act | School Cannot Delay Admission To State-Allotted Student Raising Disput
+2026-04-29 14:25:47,329 [INFO] Added: Buyer Not Criminally Liable For Purchasing Property Based On Will Later Found Fo
+2026-04-29 14:25:47,355 [INFO] Added: No Right To Complete Tenure If Appointment Is Subject To 'Until Further Orders' 
+2026-04-29 14:25:47,382 [INFO] Added: IBC | Corporate Guarantee Qualifies As 'Financial Debt' : Supreme Court
+2026-04-29 14:25:47,408 [INFO] Added: 'MP HC Hearing Appeals Of 2013-14' : Supreme Court Suspends Sentence Of Murder C
+2026-04-29 14:25:47,432 [INFO] Added: Trial Courts Must Call Reports On Mitigating & Aggravating Factors In Potential 
+2026-04-29 14:25:47,460 [INFO] Added: Supreme Court Quarterly Digest 2026 - Arbitration and Conciliation Act
+2026-04-29 14:25:47,461 [INFO] Page 1 summary: 8 added | 0 duplicates
+2026-04-29 14:25:49,241 [INFO] Scrape complete | New: 8 | Duplicates: 0 | Recent checked: 8
