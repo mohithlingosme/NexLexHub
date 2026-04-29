@@ -1,0 +1,6 @@
+2026-04-29 14:34:09,208 [INFO] Starting Bar & Bench Supreme Court scraper
+2026-04-29 14:34:20,569 [INFO] Page 1: 0 new | 0 existing skipped
+2026-04-29 14:34:28,877 [INFO] Page 2: 0 new | 0 existing skipped
+2026-04-29 14:34:36,082 [INFO] Page 3: 0 new | 0 existing skipped
+2026-04-29 14:34:36,150 [INFO] Stopping due to stale pages
+2026-04-29 14:34:36,975 [INFO] Scrape complete | New: 0 | Duplicates: 0 | Recent: 0
