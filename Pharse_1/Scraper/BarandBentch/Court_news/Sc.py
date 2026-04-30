@@ -1,102 +1,81 @@
-from dataclasses import dataclass
-from typing import Optional, Dict
-from pathlib import Path
+from __future__ import annotations
+
 import asyncio
-import argparse
-import logging
-import hashlib
-import json
-import sqlite3
-import re
-
-from datetime import datetime, timedelta, timezone
-from urllib.parse import urljoin, urlparse
-
-from playwright.async_api import async_playwright, Browser
+from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
-
+from urllib.parse import urljoin, urlparse
+import json
+import re
+import os
+import hashlib
+from datetime import datetime
+from difflib import SequenceMatcher
 
 # =========================================================
 # CONFIG
 # =========================================================
+BASE_URL = "https://www.barandbench.com"
+CATEGORY_URLS = [
+    "https://www.barandbench.com/topic/supreme-court-of-india",
+]
 
-@dataclass
-class Config:
-    base_url: str = "https://www.barandbench.com"
-    category_url: str = "https://www.barandbench.com/topic/supreme-court-of-india"
-    max_pages: int = 25
-    days_limit: int = 7
-    scrape_timeout: int = 60000
-    scrape_retries: int = 3
-    headless: bool = True
-    concurrency: int = 6
-    stale_page_limit: int = 3
+MAX_PAGES = 25
+DATA_FILE = r"C:\Users\mohit\Documents\GitHub\NexLexHub\Pharse_1\Scraper\Data\Raw_Data\SC_articles.json"
 
-    data_dir: Path = Path(__file__).parent / "Data" / "Raw_Data"
-    db_file: Path = None
-    log_file: Path = None
-
-    def __post_init__(self):
-        self.data_dir.mkdir(parents=True, exist_ok=True)
-        self.db_file = self.data_dir / "BB_SC_articles.db"
-        self.log_file = self.data_dir.parent / "logs" / "bb_scraper.log"
-        self.log_file.parent.mkdir(parents=True, exist_ok=True)
-
+SIMILARITY_THRESHOLD = 0.90
+CONCURRENCY = 3
 
 # =========================================================
-# ARTICLE MODEL
+# STRICT FILTERING
 # =========================================================
-
-@dataclass
-class Article:
-    url: str
-    title: str
-    content: str
-    date: str
-
-    def parse_date(self) -> Optional[datetime]:
-        try:
-            return datetime.fromisoformat(self.date.replace("Z", "+00:00"))
-        except Exception:
-            return None
-
-    def is_recent(self, days_limit: int) -> bool:
-        dt = self.parse_date()
-        if not dt:
-            return False
-        return dt >= datetime.now(timezone.utc) - timedelta(days=days_limit)
-
+INVALID_TITLE_PATTERNS = [
+    "Judges",
+    "Litigation News",
+    "Law & Policy News",
+    "Corporate & In-House News",
+    "Law Schools News",
+    "Columns",
+    "Interviews",
+    "Advertise",
+    "Privacy Policy",
+    "Terms of Use",
+    "Contact Us",
+    "Legal Jobs",
+    "Careers",
+    "Law School",
+    "Student special",
+    "Latest Legal News",
+    "Working Title",
+    "The Recruiters",
+    "Dealstreet",
+    "News",
+    "The Viewpoint",
+    "Corporate & In-house Columns",
+    "Litigation Columns",
+    "Law & Policy Columns",
+]
 
 # =========================================================
-# UTILITIES
+# HELPERS
 # =========================================================
-
-def setup_logging(config: Config):
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[
-            logging.FileHandler(config.log_file, encoding="utf-8"),
-            logging.StreamHandler()
-        ]
-    )
+def clean_text(text):
+    return " ".join((text or "").split()).strip()
 
 
-def clean_text(text: str) -> str:
-    return " ".join(text.split()).strip()
-
-
-def normalize_url(href: str, base_url: str) -> str:
+def normalize_url(href):
     if not href:
         return ""
     if href.startswith("//"):
         return "https:" + href
     if href.startswith("/"):
-        return urljoin(base_url, href)
-    return href
+        return urljoin(BASE_URL, href)
+    return href.strip()
 
 
-def is_valid_article_url(url: str) -> bool:
+def is_valid_article_url(url):
+    if not url:
+        return False
+
     parsed = urlparse(url)
 
     if "barandbench.com" not in parsed.netloc:
@@ -107,333 +86,692 @@ def is_valid_article_url(url: str) -> bool:
     blocked = [
         "/topic/",
         "/author/",
-        "/podcasts/",
-        "/columns/",
-        "/interviews/",
         "/videos/",
-        "/tags/",
-        "/search"
+        "/podcasts/",
+        "/photos/",
+        "/search",
+        "/lawschools",
+        "/interviews",
+        "/columns",
+        "/careers",
+        "/contact",
+        "/advertise",
+        "/privacy",
+        "/terms",
     ]
 
     if any(b in path for b in blocked):
         return False
 
-    # Bar & Bench article URLs generally contain year/month/day slug structure
-    return bool(re.search(r"/\d{4}/\d{2}/\d{2}/", path))
+    return path.startswith("/news/")
 
 
-def generate_hash(text: str) -> str:
-    return hashlib.md5(text.encode("utf-8")).hexdigest()
+def is_valid_article(title, url):
+    if not title or not url:
+        return False
+
+    if not is_valid_article_url(url):
+        return False
+
+    title = title.strip().lower()
+
+    for bad in INVALID_TITLE_PATTERNS:
+        if bad.lower() == title:
+            return False
+
+        if bad.lower() in title and len(title) < 60:
+            return False
+
+    return True
 
 
-def normalize_title(title: str) -> str:
+def hash_title(title):
+    return hashlib.md5(title.lower().encode()).hexdigest()
+
+
+def hash_content(content):
+    return hashlib.md5(content.lower().encode()).hexdigest()
+
+
+def normalize_title(title):
     return re.sub(r"[^a-z0-9]", "", title.lower())
 
 
+def is_similar(a, b):
+    return SequenceMatcher(None, a, b).ratio() >= SIMILARITY_THRESHOLD
+
+
 # =========================================================
-# DATABASE
+# DATE FIX
 # =========================================================
-
-class ArticleDatabase:
-    def __init__(self, db_path: Path):
-        self.conn = sqlite3.connect(db_path)
-        self.create_tables()
-
-    def create_tables(self):
-        self.conn.execute("""
-            CREATE TABLE IF NOT EXISTS articles (
-                url TEXT PRIMARY KEY,
-                title TEXT,
-                title_hash TEXT,
-                content TEXT,
-                content_hash TEXT,
-                date TEXT,
-                scraped_at TEXT
-            )
-        """)
-
-        self.conn.execute("""
-            CREATE TABLE IF NOT EXISTS metadata (
-                key TEXT PRIMARY KEY,
-                value TEXT
-            )
-        """)
-
-        self.conn.commit()
-
-    def article_exists(self, url: str) -> bool:
-        cur = self.conn.execute("SELECT 1 FROM articles WHERE url = ?", (url,))
-        return cur.fetchone() is not None
-
-    def is_duplicate(self, article: Article) -> bool:
-        cur = self.conn.execute(
-            "SELECT 1 FROM articles WHERE title_hash = ? OR content_hash = ?",
-            (normalize_title(article.title), generate_hash(article.content))
+def parse_date(d):
+    try:
+        dt = datetime.fromisoformat(
+            d.replace("Z", "+00:00")
         )
-        return cur.fetchone() is not None
+        return dt.replace(tzinfo=None)
+    except:
+        return datetime.min
 
-    def insert_article(self, article: Article):
-        self.conn.execute("""
-            INSERT OR IGNORE INTO articles
-            (url, title, title_hash, content, content_hash, date, scraped_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (
-            article.url,
-            article.title,
-            normalize_title(article.title),
-            article.content,
-            generate_hash(article.content),
-            article.date,
-            datetime.now(timezone.utc).isoformat()
-        ))
-        self.conn.commit()
 
-    def update_last_scrape(self):
-        now = datetime.now(timezone.utc).isoformat()
-        self.conn.execute(
-            "INSERT OR REPLACE INTO metadata (key, value) VALUES ('last_scrape_date', ?)",
-            (now,)
+# =========================================================
+# LOAD EXISTING
+# =========================================================
+def load_existing():
+    if not os.path.exists(DATA_FILE):
+        return {}, set(), set(), []
+
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    url_map = {a["url"]: a for a in data if a.get("url")}
+
+    title_hashes = set(
+        hash_title(a["title"])
+        for a in data
+        if a.get("title")
+    )
+
+    content_hashes = set(
+        hash_content(a["full_text"])
+        for a in data
+        if a.get("full_text")
+    )
+
+    normalized_titles = [
+        normalize_title(a["title"])
+        for a in data
+        if a.get("title")
+    ]
+
+    return url_map, title_hashes, content_hashes, normalized_titles
+
+
+# =========================================================
+# SAVE
+# =========================================================
+def save_data(data_dict):
+    data = list(data_dict.values())
+
+    data.sort(
+        key=lambda x: parse_date(
+            x.get("date", "")
+        ),
+        reverse=True,
+    )
+
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(
+            data,
+            f,
+            indent=4,
+            ensure_ascii=False,
         )
-        self.conn.commit()
 
-    def close(self):
-        self.conn.close()
+    print(f"💾 Saved {len(data)} articles")
 
 
 # =========================================================
-# RESOURCE BLOCKING
+# RESOURCE BLOCKER
 # =========================================================
-
 async def block_resources(route):
-    if route.request.resource_type in ["image", "font", "stylesheet", "media"]:
+    if route.request.resource_type in [
+        "image",
+        "stylesheet",
+        "font",
+        "media",
+    ]:
         await route.abort()
     else:
         await route.continue_()
 
 
 # =========================================================
+# TOPIC PAGE EXTRACTION
+# =========================================================
+async def extract_links(page):
+    content = await page.content()
+    soup = BeautifulSoup(content, "html.parser")
+
+    links = set()
+
+    selectors = [
+        "h2 a[href]",
+        "h3 a[href]",
+        "article a[href]",
+        "a[href]",
+    ]
+
+    for selector in selectors:
+        for a in soup.select(selector):
+            href = normalize_url(
+                a.get("href")
+            )
+
+            title = clean_text(
+                a.get_text()
+            )
+
+            if (
+                href
+                and is_valid_article(
+                    title,
+                    href,
+                )
+            ):
+                links.add(href)
+
+    return links
+
+
+# =========================================================
 # ARTICLE SCRAPER
 # =========================================================
-
-async def scrape_article(browser: Browser, url: str, config: Config) -> Optional[Article]:
-    for attempt in range(config.scrape_retries):
-        page = await browser.new_page()
-        await page.route("**/*", block_resources)
-
-        try:
-            await page.goto(url, timeout=config.scrape_timeout)
-            await page.wait_for_timeout(1200)
-
-            soup = BeautifulSoup(await page.content(), "html.parser")
-
-            # Bar & Bench heavily uses JSON-LD structured data
-            for script in soup.find_all("script", {"type": "application/ld+json"}):
-                try:
-                    raw = script.string or "{}"
-                    data = json.loads(raw)
-
-                    if isinstance(data, list):
-                        for item in data:
-                            if isinstance(item, dict) and item.get("@type") == "NewsArticle":
-                                data = item
-                                break
-
-                    if isinstance(data, dict) and data.get("@type") == "NewsArticle":
-                        title = clean_text(data.get("headline", ""))
-                        content = clean_text(data.get("articleBody", ""))
-                        date = data.get("datePublished", "")
-
-                        if title and content:
-                            return Article(
-                                url=url,
-                                title=title,
-                                content=content,
-                                date=date
-                            )
-                except Exception:
-                    continue
-
-            # Fallback HTML parsing
-            title_tag = soup.find("h1")
-            body_div = soup.find("div", class_=re.compile(r"story|article|content", re.I))
-            date_meta = soup.find("meta", {"property": "article:published_time"})
-
-            if title_tag and body_div:
-                paragraphs = body_div.find_all("p")
-                content = clean_text(" ".join(p.get_text(" ", strip=True) for p in paragraphs))
-
-                return Article(
-                    url=url,
-                    title=clean_text(title_tag.get_text()),
-                    content=content,
-                    date=date_meta.get("content", "") if date_meta else ""
-                )
-
-        except Exception as e:
-            logging.warning(f"Attempt {attempt+1} failed for {url}: {e}")
-            await asyncio.sleep(2)
-
-        finally:
-            await page.close()
-
-    logging.error(f"All retries failed for {url}")
-    return None
-
-
-# =========================================================
-# PAGE PROCESSOR
-# =========================================================
-
-async def process_page(browser, db, page_num, config, sem, stats):
-    page = await browser.new_page()
-    await page.route("**/*", block_resources)
-
-    page_url = f"{config.category_url}?page={page_num}"
+async def scrape_article(context, url):
+    page = await context.new_page()
+    await page.route(
+        "**/*",
+        block_resources,
+    )
 
     try:
-        await page.goto(page_url, timeout=config.scrape_timeout)
-        await page.wait_for_timeout(1500)
+        success = False
 
-        soup = BeautifulSoup(await page.content(), "html.parser")
+        for attempt in range(4):
+            try:
+                await page.goto(
+                    url,
+                    timeout=90000,
+                    wait_until="domcontentloaded",
+                )
 
-        links = {
-            normalize_url(a.get("href"), config.base_url)
-            for a in soup.find_all("a", href=True)
-            if is_valid_article_url(normalize_url(a.get("href"), config.base_url))
-        }
+                success = True
+                break
 
-        existing_links = [l for l in links if db.article_exists(l)]
-        new_links = [l for l in links if not db.article_exists(l)]
+            except:
+                await asyncio.sleep(
+                    2 + attempt
+                )
 
-        logging.info(
-            f"Page {page_num}: {len(new_links)} new | {len(existing_links)} existing skipped"
+        if not success:
+            print(
+                f"❌ Article timeout: {url}"
+            )
+            return None
+
+        await page.wait_for_timeout(
+            5000
         )
 
-        if not new_links:
-            return False
+        soup = BeautifulSoup(
+            await page.content(),
+            "html.parser",
+        )
 
-        async def bounded_scrape(link):
-            async with sem:
-                return await scrape_article(browser, link, config)
+        data = {
+            "id": hashlib.md5(
+                url.encode()
+            ).hexdigest(),
+            "source": "BarAndBench",
+            "url": url,
+            "title": "",
+            "content": "",
+            "full_text": "",
+            "summary": "",
+            "date": "",
+            "author": "",
+            "category": "Supreme Court",
+            "tags": [],
+            "is_live": False,
+            "scraped_at": datetime.utcnow().isoformat(),
+        }
 
-        tasks = [bounded_scrape(link) for link in new_links]
-        articles = await asyncio.gather(*tasks, return_exceptions=True)
+        # =====================================================
+        # JSON-LD EXTRACTION
+        # =====================================================
+        for script in soup.find_all(
+            "script",
+            type="application/ld+json",
+        ):
+            try:
+                raw = (
+                    script.string
+                    or script.get_text(
+                        strip=True
+                    )
+                    or "{}"
+                )
 
-        recent_found = 0
+                j = json.loads(raw)
+                candidates = []
 
-        for art in articles:
-            if not isinstance(art, Article):
+                if isinstance(j, list):
+                    candidates.extend(j)
+
+                elif isinstance(j, dict):
+                    if (
+                        "@graph" in j
+                        and isinstance(
+                            j["@graph"],
+                            list,
+                        )
+                    ):
+                        candidates.extend(
+                            j["@graph"]
+                        )
+                    else:
+                        candidates.append(
+                            j
+                        )
+
+                for item in candidates:
+                    if not isinstance(
+                        item,
+                        dict,
+                    ):
+                        continue
+
+                    if item.get(
+                        "@type"
+                    ) not in [
+                        "NewsArticle",
+                        "Article",
+                        "LiveBlogPosting",
+                    ]:
+                        continue
+
+                    data["title"] = clean_text(
+                        item.get(
+                            "headline",
+                            "",
+                        )
+                        or item.get(
+                            "name",
+                            "",
+                        )
+                    )
+
+                    data["content"] = clean_text(
+                        item.get(
+                            "articleBody",
+                            "",
+                        )
+                        or item.get(
+                            "description",
+                            "",
+                        )
+                        or item.get(
+                            "abstract",
+                            "",
+                        )
+                        or item.get(
+                            "text",
+                            "",
+                        )
+                    )
+
+                    data["date"] = (
+                        item.get(
+                            "datePublished",
+                            "",
+                        )
+                        or item.get(
+                            "dateModified",
+                            "",
+                        )
+                        or item.get(
+                            "coverageStartTime",
+                            "",
+                        )
+                    )
+
+                    if isinstance(
+                        item.get("author"),
+                        dict,
+                    ):
+                        data["author"] = clean_text(
+                            item[
+                                "author"
+                            ].get(
+                                "name", ""
+                            )
+                        )
+
+                    if (
+                        item.get("@type")
+                        == "LiveBlogPosting"
+                    ):
+                        data[
+                            "is_live"
+                        ] = True
+
+                    break
+
+            except:
                 continue
 
-            if art.is_recent(config.days_limit):
-                recent_found += 1
-                stats["recent"] += 1
+        # =====================================================
+        # FALLBACK TITLE
+        # =====================================================
+        if not data["title"]:
+            h1 = soup.find("h1")
+            if h1:
+                data["title"] = clean_text(
+                    h1.get_text()
+                )
 
-                if not db.is_duplicate(art):
-                    db.insert_article(art)
-                    stats["new"] += 1
-                    logging.info(f"Added: {art.title[:90]}")
-                else:
-                    stats["dup"] += 1
+        # =====================================================
+        # FALLBACK DATE
+        # =====================================================
+        if not data["date"]:
+            meta = (
+                soup.find(
+                    "meta",
+                    property="article:published_time",
+                )
+                or soup.find(
+                    "meta",
+                    attrs={
+                        "name": "publish-date"
+                    },
+                )
+            )
 
-        return recent_found > 0
+            if meta:
+                data["date"] = meta.get(
+                    "content", ""
+                )
+
+        # =====================================================
+        # DOM FALLBACK
+        # =====================================================
+        if len(data["content"]) < 100:
+            candidate_paragraphs = []
+
+            selectors = [
+                "div.story-element.story-element-text",
+                "div.story-element-text",
+                "div.story-element",
+                "div[itemprop='articleBody']",
+                "article",
+                "div[data-content]",
+                "div[class*='story']",
+                "div[class*='content']",
+                "section",
+            ]
+
+            for selector in selectors:
+                blocks = soup.select(
+                    selector
+                )
+
+                for block in blocks:
+                    paragraphs = (
+                        block.find_all(
+                            "p"
+                        )
+                    )
+
+                    for p in paragraphs:
+                        txt = clean_text(
+                            p.get_text()
+                        )
+
+                        if len(txt) > 15:
+                            candidate_paragraphs.append(
+                                txt
+                            )
+
+                if candidate_paragraphs:
+                    break
+
+            if not candidate_paragraphs:
+                for p in soup.find_all("p"):
+                    txt = clean_text(
+                        p.get_text()
+                    )
+
+                    if len(txt) > 15:
+                        candidate_paragraphs.append(
+                            txt
+                        )
+
+            data["content"] = clean_text(
+                " ".join(
+                    candidate_paragraphs
+                )
+            )
+
+        # =====================================================
+        # FINAL VALIDATION
+        # =====================================================
+        if not is_valid_article(
+            data["title"],
+            url,
+        ):
+            return None
+
+        if (
+            not data["title"]
+            or not data["content"]
+        ):
+            return None
+
+        # KEEP OUTPUT SAME
+        data["summary"] = data["content"][:1000]
+        data["full_text"] = data["content"]
+
+        data["content"] = f"""
+[ARTICLE]
+Title: {data['title']}
+Date: {data['date']}
+Source: BarAndBench
+
+[CONTENT]
+{data['full_text']}
+"""
+
+        return data
 
     except Exception as e:
-        logging.error(f"Page {page_num} failed: {e}")
-        return False
+        print(
+            f"❌ Article error: {url} | {e}"
+        )
+        return None
 
     finally:
         await page.close()
 
 
 # =========================================================
-# MAIN LOOP
+# MAIN SCRAPER
 # =========================================================
+async def scrape():
+    (
+        existing,
+        title_hashes,
+        content_hashes,
+        normalized_titles,
+    ) = load_existing()
 
-async def scrape(config: Config):
-    db = ArticleDatabase(config.db_file)
-
-    stats = {
-        "new": 0,
-        "dup": 0,
-        "recent": 0
-    }
-
-    stale_pages = 0
+    print(
+        f"🔁 Loaded {len(existing)} articles"
+    )
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=config.headless)
-        sem = asyncio.Semaphore(config.concurrency)
+        browser = await p.chromium.launch(
+            headless=True
+        )
 
-        for page_num in range(1, config.max_pages + 1):
-            should_continue = await process_page(
-                browser,
-                db,
-                page_num,
-                config,
-                sem,
-                stats
-            )
+        context = (
+            await browser.new_context()
+        )
 
-            if not should_continue:
-                stale_pages += 1
-            else:
-                stale_pages = 0
+        page = await context.new_page()
+        await page.route(
+            "**/*",
+            block_resources,
+        )
 
-            if stale_pages >= config.stale_page_limit:
-                logging.info("Stopping due to stale pages")
-                break
+        for category in CATEGORY_URLS:
+            print(f"\n📂 {category}")
 
-            await asyncio.sleep(1)
+            previous_fingerprint = None
+
+            for i in range(
+                1,
+                MAX_PAGES + 1,
+            ):
+                url = (
+                    category
+                    if i == 1
+                    else f"{category}?page={i}"
+                )
+
+                try:
+                    await page.goto(
+                        url,
+                        timeout=90000,
+                        wait_until="domcontentloaded",
+                    )
+                except:
+                    continue
+
+                await page.wait_for_timeout(
+                    3000
+                )
+
+                links = await extract_links(
+                    page
+                )
+
+                topic_fingerprint = hash(
+                    tuple(
+                        sorted(links)
+                    )
+                )
+
+                if (
+                    not links
+                    or topic_fingerprint
+                    == previous_fingerprint
+                ):
+                    print(
+                        "⛔ Stopping due to stale or duplicate topic pages"
+                    )
+                    break
+
+                previous_fingerprint = (
+                    topic_fingerprint
+                )
+
+                print(
+                    f"🔗 Page {i}: {len(links)} links"
+                )
+
+                semaphore = asyncio.Semaphore(
+                    CONCURRENCY
+                )
+
+                async def bounded_scrape(
+                    link,
+                ):
+                    async with semaphore:
+                        return await scrape_article(
+                            context,
+                            link,
+                        )
+
+                tasks = []
+
+                for link in links:
+                    if link in existing:
+                        continue
+
+                    tasks.append(
+                        bounded_scrape(
+                            link
+                        )
+                    )
+
+                results = await asyncio.gather(
+                    *tasks
+                )
+
+                for article in results:
+                    if not article:
+                        continue
+
+                    title_hash = hash_title(
+                        article["title"]
+                    )
+
+                    content_hash = (
+                        hash_content(
+                            article[
+                                "full_text"
+                            ]
+                        )
+                    )
+
+                    normalized = (
+                        normalize_title(
+                            article[
+                                "title"
+                            ]
+                        )
+                    )
+
+                    if (
+                        title_hash
+                        in title_hashes
+                    ):
+                        continue
+
+                    if (
+                        content_hash
+                        in content_hashes
+                    ):
+                        continue
+
+                    if any(
+                        is_similar(
+                            normalized,
+                            prev,
+                        )
+                        for prev in normalized_titles[
+                            -150:
+                        ]
+                    ):
+                        continue
+
+                    title_hashes.add(
+                        title_hash
+                    )
+
+                    content_hashes.add(
+                        content_hash
+                    )
+
+                    normalized_titles.append(
+                        normalized
+                    )
+
+                    existing[
+                        article["url"]
+                    ] = article
+
+                    print(
+                        f"✅ {article['title']}"
+                    )
+
+                save_data(existing)
 
         await browser.close()
 
-    db.update_last_scrape()
-    db.close()
-
-    logging.info(
-        f"Scrape complete | New: {stats['new']} | Duplicates: {stats['dup']} | Recent: {stats['recent']}"
-    )
-
 
 # =========================================================
-# CLI
+# RUN
 # =========================================================
-
-def parse_args() -> Config:
-    parser = argparse.ArgumentParser(
-        description="Bar & Bench Supreme Court Incremental Scraper"
-    )
-
-    parser.add_argument("--max-pages", type=int, default=25)
-    parser.add_argument("--days-limit", type=int, default=7)
-    parser.add_argument("--headless", action="store_true")
-    parser.add_argument("--data-dir", type=Path)
-    parser.add_argument("--concurrency", type=int, default=6)
-
-    args = parser.parse_args()
-
-    config = Config()
-    config.max_pages = args.max_pages
-    config.days_limit = args.days_limit
-    config.headless = args.headless or config.headless
-    config.concurrency = args.concurrency
-
-    if args.data_dir:
-        config.data_dir = args.data_dir
-        config.__post_init__()
-
-    return config
-
-
-def main():
-    config = parse_args()
-    setup_logging(config)
-
-    logging.info("Starting Bar & Bench Supreme Court scraper")
-
-    asyncio.run(scrape(config))
-
-
 if __name__ == "__main__":
-    main()
+    asyncio.run(scrape())
