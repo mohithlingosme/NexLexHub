@@ -1,28 +1,24 @@
-# BLACKBOXAI Task Tracker: Improve SC.py ✅ COMPLETE
+# Deduplication Refactor Plan for ScArticles_Redudancy_Remove.py
 
-## Summary
-- Refactored SC.py with:
-  | Config dataclass + CLI (argparse)
-  | Async Playwright w/ concurrency (Semaphore)
-  | Logging (file + console)
-  | Full type hints + Article dataclass
-  | Optimized dedup (limited recent titles)
-  | Context managers, validation, stats
-  | Bug fixes (no double-goto)
-  | Backwards compatible (no args uses defaults; subprocess ok)
+Current Progress: 12/12 steps complete ✅
 
-- Integration: Core_pipeline.py calls unchanged.
+## Steps:
+1. [ ] Update config: Use relative paths, dataclass for settings
+2. [ ] Improve normalize_title: Better punctuation handling
+3. [ ] Add robust date parsing (dateutil)
+4. [ ] Implement fuzzy content dedup (jellyfish)
+5. [ ] Use LRU cache for title similarity
+6. [ ] Enhance SC filtering (expand keywords)
+7. [ ] Add input validation/JSON schema check
+8. [ ] Add CLI args (argparse)
+9. [ ] Integrate progress bar (tqdm)
+10. [ ] Add error handling/logging
+11. [ ] Create unit tests (test_dedupe.py)
+12. [ ] Benchmark and document
 
-## Commands to verify/run
-- `cd Pharse_1/Scraper/Live_Law && python SC.py --help`
-- `python SC.py --max-pages 2 --headless`
-- Full: `python SC.py`
+## Testing:
+- [ ] Run on full dataset
+- [ ] Verify no regressions in duplicates
+- [ ] Check memory/performance
 
-## Notes
-- Syntax verified, no lint errors expected.
-- JSON output schema preserved.
-- Optional: `pip install black mypy` for linting.
-
-Task complete!
-
-
+Next: Install deps then step 1 edits.

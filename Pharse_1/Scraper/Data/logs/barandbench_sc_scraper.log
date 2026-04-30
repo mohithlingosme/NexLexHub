@@ -1,0 +1,12 @@
+2026-04-29 15:21:00,780 [INFO] Page 1: Found 24 candidate links
+2026-04-29 15:21:00,780 [INFO] Page 1: 24 new | 0 existing skipped
+2026-04-29 15:22:47,296 [INFO] Stale pages: 1
+2026-04-29 15:22:51,507 [INFO] Page 2: Found 24 candidate links
+2026-04-29 15:22:51,507 [INFO] Page 2: 24 new | 0 existing skipped
+2026-04-29 15:24:34,952 [INFO] Stale pages: 2
+2026-04-29 15:24:38,998 [INFO] Page 3: Found 24 candidate links
+2026-04-29 15:24:38,999 [INFO] Page 3: 24 new | 0 existing skipped
+2026-04-29 15:26:08,654 [INFO] Stale pages: 3
+2026-04-29 15:26:08,655 [INFO] Stopping due to stale pages
+2026-04-29 15:26:09,704 [INFO] Scrape complete | New: 0 | Duplicates: 0 | Total saved: 42
+2026-04-29 15:26:09,704 [INFO] Saved to: C:\Users\mohit\Documents\GitHub\NexLexHub\Pharse_1\Scraper\Data\Raw_Data\SC_articles.json
