@@ -1,0 +1,23 @@
+{
+    "total_input_articles": 18,
+    "accepted_articles": 17,
+    "rejected_articles": 1,
+    "acceptance_rate": 94.44,
+    "average_quality_score": 1075.24,
+    "tier_distribution": {
+        "Tier_B": 6,
+        "Tier_A": 9,
+        "Tier_C": 2
+    },
+    "category_distribution": {
+        "corporate": 4,
+        "criminal": 9,
+        "insolvency": 2,
+        "regulatory": 6,
+        "constitutional": 5,
+        "civil": 2,
+        "general_legal": 2
+    },
+    "generated_at": "2026-05-02T18:15:01.951345+00:00",
+    "pipeline_version": "phase_14_final_enterprise"
+}
