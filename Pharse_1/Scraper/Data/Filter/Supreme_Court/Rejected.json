@@ -1,0 +1,32 @@
+[
+    {
+        "reason": "Low quality score",
+        "article": {
+            "id": "438cdfc4dc4587e45691b0be123f024d36f3f6a9bb3c687f00a06e6fe56439f1",
+            "url": "https://www.barandbench.com/news/scba-elections-supreme-court-orders-vice-president-post-to-be-reserved-for-women",
+            "title": "SCBA Elections: Supreme Court orders Vice President post to be reserved for women",
+            "author": "Unknown",
+            "source": "BarAndBench",
+            "court": "Supreme Court",
+            "date": "2026-04-27T10:57:59Z",
+            "content": "SCBA Elections: Supreme Court orders Vice President post to be reserved for women In a landmark order giving impetus to women lawyers in bar bodies, the Supreme Court on Monday directed that the post of Vice President of Supreme Court Bar Association (SCBA) be reserved for women in the upcoming polls to elect the executive committee of the bar body.A Bench of Chief Justice of India (CJI) Surya Kant and Justice KV Viswanathan passed the direction in a case concerning SCBA electoral reforms.In 2025, the top court had passed a similar direction, reserving the post of Secretary of SCBA for women lawyers.Prior to that, in 2024, the Court had directed that at least one-third of posts in the executive committee (EC) of SCBA including the post of treasurer should be reserved for women.The order passed on Monday augments the directions issued up until now by the Court to boost women's participation in bar politics.",
+            "summary_ready_content": "SCBA Elections: Supreme Court orders Vice President post to be reserved for women In a landmark order giving impetus to women lawyers in bar bodies, the Supreme Court on Monday directed that the post of Vice President of Supreme Court Bar Association (SCBA) be reserved for women in the upcoming polls to elect the executive committee of the bar body..A Bench of Chief Justice of India (CJI) Surya Kant and Justice KV Viswanathan passed the direction in a case concerning SCBA electoral reforms.In 2025, the top court had passed a similar direction, reserving the post of Secretary of SCBA for women lawyers.Prior to that, in 2024, the Court had directed that at least one-third of posts in the executive committee (EC) of SCBA including the post of treasurer should be reserved for women.The order passed on Monday augments the directions issued up until now by the Court to boost women's participation in bar politics.",
+            "category_tags": [
+                "general_legal"
+            ],
+            "legal_entities": [],
+            "case_references": [],
+            "judges": [],
+            "bench_strength": "Unknown",
+            "content_type": "legal_news",
+            "chunks": [
+                "SCBA Elections: Supreme Court orders Vice President post to be reserved for women In a landmark order giving impetus to women lawyers in bar bodies, the Supreme Court on Monday directed that the post of Vice President of Supreme Court Bar Association (SCBA) be reserved for women in the upcoming polls to elect the executive committee of the bar body..A Bench of Chief Justice of India (CJI) Surya Kant and Justice KV Viswanathan passed the direction in a case concerning SCBA electoral reforms.In 2025, the top court had passed a similar direction, reserving the post of Secretary of SCBA for women lawyers.Prior to that, in 2024, the Court had directed that at least one-third of posts in the executive committee (EC) of SCBA including the post of treasurer should be reserved for women.The order passed on Monday augments the directions issued up until now by the Court to boost women's participation in bar politics."
+            ],
+            "chunk_count": 1,
+            "word_count": 154,
+            "processed_at": "2026-05-02T18:09:20.032543+00:00",
+            "pipeline_version": "phase_12_debugged_final",
+            "qa_score": 10
+        }
+    }
+]

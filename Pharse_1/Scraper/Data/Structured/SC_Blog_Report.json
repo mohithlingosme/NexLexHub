@@ -1,0 +1,17 @@
+{
+    "total_articles": 18,
+    "accepted_articles": 18,
+    "rejected_articles": 0,
+    "acceptance_rate": 100.0,
+    "category_distribution": {
+        "corporate": 4,
+        "criminal": 9,
+        "insolvency": 2,
+        "regulatory": 6,
+        "constitutional": 5,
+        "civil": 2,
+        "general_legal": 3
+    },
+    "generated_at": "2026-05-02T18:38:56.056432+00:00",
+    "pipeline_version": "nexlexhub_sc_pipeline_final_v1"
+}
