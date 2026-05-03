@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "root": "C:\\Users\\mohit\\Documents\\GitHub\\NexLexHub",
+  "root": "C:\\Users\\Admin\\OneDrive\\Documents\\GitHub\\NexLexHub",
   "python": {
     "nodes": [
       "2_embed_store.py",
@@ -43,7 +43,15 @@
       "Assets/ai-legal-news-agent/utils/vector_utils.py",
       "Pharse_1/Core_pipeline.py",
       "Pharse_1/Neural_Scheme.py",
+      "Pharse_1/Processing/ScArticles_Redudancy_Remove.py",
+      "Pharse_1/Processing/test_dedupe.py",
       "Pharse_1/Scraper/Bar&Bentch_Scraper.py",
+      "Pharse_1/Scraper/BarandBentch/Court_news/High_court's/AllahabadHC.py",
+      "Pharse_1/Scraper/BarandBentch/Court_news/Sc.py",
+      "Pharse_1/Scraper/Data/Script/Ai_pipelines.py",
+      "Pharse_1/Scraper/Data/Script/Chuck_SC.py",
+      "Pharse_1/Scraper/Data/Script/Fliter_Sc.py",
+      "Pharse_1/Scraper/Data/Script/SC_Cleaner.py",
       "Pharse_1/Scraper/Live_Law/High Court/Karnataka_HC.py",
       "Pharse_1/Scraper/Live_Law/High Court/__init__.py",
       "Pharse_1/Scraper/Live_Law/SC.py",
@@ -199,6 +207,9 @@
   "tree": {
     "nodes": [
       "./",
+      ".github/",
+      ".github/workflows/",
+      ".github/workflows/ci-cd.yml",
       "2_embed_store.py",
       "3_query_rag.py",
       "4_api.py",
@@ -237,9 +248,6 @@
       "Assets/Judicial_precedent/scraper/Company_law_board_Scraper.py",
       "Assets/Judicial_precedent/scraper/Experiment/",
       "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/",
-      "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/.pre-commit-config.yaml",
-      "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/README.md",
-      "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/src/",
       "Assets/Judicial_precedent/scraper/HC/",
       "Assets/Judicial_precedent/scraper/HC/Scraper.py",
       "Assets/Judicial_precedent/scraper/HC/__init__.py",
@@ -260,20 +268,6 @@
       "Assets/ai-legal-news-agent/ai/rag.py",
       "Assets/ai-legal-news-agent/ai/summarize.py",
       "Assets/ai-legal-news-agent/config.py",
-      "Assets/ai-legal-news-agent/data/",
-      "Assets/ai-legal-news-agent/data/chunks/",
-      "Assets/ai-legal-news-agent/data/chunks/chunk_0.json",
-      "Assets/ai-legal-news-agent/data/chunks/chunk_1.json",
-      "Assets/ai-legal-news-agent/data/chunks/chunk_2.json",
-      "Assets/ai-legal-news-agent/data/chunks/chunk_3.json",
-      "Assets/ai-legal-news-agent/data/chunks/chunk_4.json",
-      "Assets/ai-legal-news-agent/data/chunks/chunk_5.json",
-      "Assets/ai-legal-news-agent/data/processed/",
-      "Assets/ai-legal-news-agent/data/processed/clean_articles.json",
-      "Assets/ai-legal-news-agent/data/processed/deduplicated_articles.json",
-      "Assets/ai-legal-news-agent/data/processed/vector_store.json",
-      "Assets/ai-legal-news-agent/data/raw/",
-      "Assets/ai-legal-news-agent/data/raw/articles.json",
       "Assets/ai-legal-news-agent/main.py",
       "Assets/ai-legal-news-agent/pipeline/",
       "Assets/ai-legal-news-agent/pipeline/__init__.py",
@@ -319,34 +313,79 @@
       "Assets/frontend/assets/",
       "GRAPH.md",
       "GRAPH_test.md",
+      "ML_planning.md",
       "Pharse_1/",
       "Pharse_1/Core_pipeline.py",
       "Pharse_1/Dev_plan.txt",
       "Pharse_1/Neural_Scheme.md",
       "Pharse_1/Neural_Scheme.py",
+      "Pharse_1/Processing/",
+      "Pharse_1/Processing/Nr_Sc_Articles.json",
+      "Pharse_1/Processing/ScArticles_Redudancy_Remove.py",
+      "Pharse_1/Processing/TODO.md",
+      "Pharse_1/Processing/test_dedupe.py",
       "Pharse_1/README.md",
       "Pharse_1/Scraper/",
       "Pharse_1/Scraper/Bar&Bentch_Scraper.py",
+      "Pharse_1/Scraper/BarandBentch/",
+      "Pharse_1/Scraper/BarandBentch/Court_news/",
+      "Pharse_1/Scraper/BarandBentch/Court_news/Data/",
+      "Pharse_1/Scraper/BarandBentch/Court_news/Data/Raw_Data/",
+      "Pharse_1/Scraper/BarandBentch/Court_news/Data/SC_articles.json",
+      "Pharse_1/Scraper/BarandBentch/Court_news/Data/logs/",
+      "Pharse_1/Scraper/BarandBentch/Court_news/High_court's/",
+      "Pharse_1/Scraper/BarandBentch/Court_news/High_court's/AllahabadHC.py",
+      "Pharse_1/Scraper/BarandBentch/Court_news/Sc.py",
       "Pharse_1/Scraper/Data/",
       "Pharse_1/Scraper/Data/Cleaned data/",
+      "Pharse_1/Scraper/Data/Cleaned data/Cleaned_Sc_articles.json",
+      "Pharse_1/Scraper/Data/Filter/",
+      "Pharse_1/Scraper/Data/Filter/Supreme_Court/",
+      "Pharse_1/Scraper/Data/Filter/Supreme_Court/Final_training_corpus.json",
+      "Pharse_1/Scraper/Data/Filter/Supreme_Court/Rejected.json",
+      "Pharse_1/Scraper/Data/Filter/Supreme_Court/report.json",
+      "Pharse_1/Scraper/Data/Processed/",
+      "Pharse_1/Scraper/Data/Processed/Phase14_Final_Training_Corpus.json",
+      "Pharse_1/Scraper/Data/Processed/Phase14_Rejected.json",
+      "Pharse_1/Scraper/Data/Processed/Phase14_Report.json",
       "Pharse_1/Scraper/Data/Raw_Data/",
+      "Pharse_1/Scraper/Data/Raw_Data/HighCourt News/",
+      "Pharse_1/Scraper/Data/Raw_Data/HighCourt News/AllahabadHC.json",
       "Pharse_1/Scraper/Data/Raw_Data/SC_articles.json",
       "Pharse_1/Scraper/Data/Raw_Data/articles.json",
+      "Pharse_1/Scraper/Data/Script/",
+      "Pharse_1/Scraper/Data/Script/Ai_pipelines.py",
+      "Pharse_1/Scraper/Data/Script/Chuck_SC.py",
+      "Pharse_1/Scraper/Data/Script/Fliter_Sc.py",
+      "Pharse_1/Scraper/Data/Script/SC_Cleaner.py",
+      "Pharse_1/Scraper/Data/Structured/",
+      "Pharse_1/Scraper/Data/Structured/Rejected_SC_Blogs.json",
+      "Pharse_1/Scraper/Data/Structured/SC_Blog_Report.json",
+      "Pharse_1/Scraper/Data/Structured/Structured_SC_Blogs.json",
+      "Pharse_1/Scraper/Data/logs/",
       "Pharse_1/Scraper/Live_Law/",
       "Pharse_1/Scraper/Live_Law/Data/",
       "Pharse_1/Scraper/Live_Law/Data/Raw_Data/",
       "Pharse_1/Scraper/Live_Law/Data/Raw_Data/SC_articles.json",
+      "Pharse_1/Scraper/Live_Law/Data/logs/",
       "Pharse_1/Scraper/Live_Law/High Court/",
       "Pharse_1/Scraper/Live_Law/High Court/Karnataka_HC.py",
       "Pharse_1/Scraper/Live_Law/High Court/__init__.py",
       "Pharse_1/Scraper/Live_Law/SC.py",
       "Pharse_1/Scraper/Live_Law/__init__.py",
       "Pharse_1/Scraper/__init__.py",
+      "Pharse_1/TODO.md",
+      "Pharse_1/TODO/",
+      "Pharse_1/TODO/TODO.md",
       "README.md",
       "TODO.md",
       "TODO_fix.md",
       "TODO_structure_fix.md",
+      "articles.json",
       "config.php",
+      "failed_logs.json",
+      "final_blog_output.json",
+      "final_blog_output.md",
       "production/",
       "production/implementation_plan.md",
       "production/phase_01.md",
@@ -366,6 +405,7 @@
       "python-service/main.py",
       "python-service/requirements.txt",
       "requirements.txt",
+      "supreme_court_articles.json",
       "tools/",
       "tools/GRAPH.md",
       "tools/graphify.py",
@@ -373,6 +413,10 @@
       "tools/test_graphify.py"
     ],
     "edges": [
+      {
+        "from": "./",
+        "to": ".github/"
+      },
       {
         "from": "./",
         "to": "2_embed_store.py"
@@ -399,6 +443,10 @@
       },
       {
         "from": "./",
+        "to": "ML_planning.md"
+      },
+      {
+        "from": "./",
         "to": "Pharse_1/"
       },
       {
@@ -419,7 +467,23 @@
       },
       {
         "from": "./",
+        "to": "articles.json"
+      },
+      {
+        "from": "./",
         "to": "config.php"
+      },
+      {
+        "from": "./",
+        "to": "failed_logs.json"
+      },
+      {
+        "from": "./",
+        "to": "final_blog_output.json"
+      },
+      {
+        "from": "./",
+        "to": "final_blog_output.md"
       },
       {
         "from": "./",
@@ -435,7 +499,19 @@
       },
       {
         "from": "./",
+        "to": "supreme_court_articles.json"
+      },
+      {
+        "from": "./",
         "to": "tools/"
+      },
+      {
+        "from": ".github/",
+        "to": ".github/workflows/"
+      },
+      {
+        "from": ".github/workflows/",
+        "to": ".github/workflows/ci-cd.yml"
       },
       {
         "from": "Assets/",
@@ -606,18 +682,6 @@
         "to": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/"
       },
       {
-        "from": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/",
-        "to": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/.pre-commit-config.yaml"
-      },
-      {
-        "from": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/",
-        "to": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/README.md"
-      },
-      {
-        "from": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/",
-        "to": "Assets/Judicial_precedent/scraper/Experiment/google-news-scraper/src/"
-      },
-      {
         "from": "Assets/Judicial_precedent/scraper/HC/",
         "to": "Assets/Judicial_precedent/scraper/HC/Scraper.py"
       },
@@ -656,10 +720,6 @@
       {
         "from": "Assets/ai-legal-news-agent/",
         "to": "Assets/ai-legal-news-agent/config.py"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/",
-        "to": "Assets/ai-legal-news-agent/data/"
       },
       {
         "from": "Assets/ai-legal-news-agent/",
@@ -708,58 +768,6 @@
       {
         "from": "Assets/ai-legal-news-agent/ai/",
         "to": "Assets/ai-legal-news-agent/ai/summarize.py"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/",
-        "to": "Assets/ai-legal-news-agent/data/chunks/"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/",
-        "to": "Assets/ai-legal-news-agent/data/processed/"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/",
-        "to": "Assets/ai-legal-news-agent/data/raw/"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/chunks/",
-        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_0.json"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/chunks/",
-        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_1.json"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/chunks/",
-        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_2.json"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/chunks/",
-        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_3.json"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/chunks/",
-        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_4.json"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/chunks/",
-        "to": "Assets/ai-legal-news-agent/data/chunks/chunk_5.json"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/processed/",
-        "to": "Assets/ai-legal-news-agent/data/processed/clean_articles.json"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/processed/",
-        "to": "Assets/ai-legal-news-agent/data/processed/deduplicated_articles.json"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/processed/",
-        "to": "Assets/ai-legal-news-agent/data/processed/vector_store.json"
-      },
-      {
-        "from": "Assets/ai-legal-news-agent/data/raw/",
-        "to": "Assets/ai-legal-news-agent/data/raw/articles.json"
       },
       {
         "from": "Assets/ai-legal-news-agent/pipeline/",
@@ -911,6 +919,10 @@
       },
       {
         "from": "Pharse_1/",
+        "to": "Pharse_1/Processing/"
+      },
+      {
+        "from": "Pharse_1/",
         "to": "Pharse_1/README.md"
       },
       {
@@ -918,8 +930,36 @@
         "to": "Pharse_1/Scraper/"
       },
       {
+        "from": "Pharse_1/",
+        "to": "Pharse_1/TODO.md"
+      },
+      {
+        "from": "Pharse_1/",
+        "to": "Pharse_1/TODO/"
+      },
+      {
+        "from": "Pharse_1/Processing/",
+        "to": "Pharse_1/Processing/Nr_Sc_Articles.json"
+      },
+      {
+        "from": "Pharse_1/Processing/",
+        "to": "Pharse_1/Processing/ScArticles_Redudancy_Remove.py"
+      },
+      {
+        "from": "Pharse_1/Processing/",
+        "to": "Pharse_1/Processing/TODO.md"
+      },
+      {
+        "from": "Pharse_1/Processing/",
+        "to": "Pharse_1/Processing/test_dedupe.py"
+      },
+      {
         "from": "Pharse_1/Scraper/",
         "to": "Pharse_1/Scraper/Bar&Bentch_Scraper.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/",
+        "to": "Pharse_1/Scraper/BarandBentch/"
       },
       {
         "from": "Pharse_1/Scraper/",
@@ -934,12 +974,100 @@
         "to": "Pharse_1/Scraper/__init__.py"
       },
       {
+        "from": "Pharse_1/Scraper/BarandBentch/",
+        "to": "Pharse_1/Scraper/BarandBentch/Court_news/"
+      },
+      {
+        "from": "Pharse_1/Scraper/BarandBentch/Court_news/",
+        "to": "Pharse_1/Scraper/BarandBentch/Court_news/Data/"
+      },
+      {
+        "from": "Pharse_1/Scraper/BarandBentch/Court_news/",
+        "to": "Pharse_1/Scraper/BarandBentch/Court_news/High_court's/"
+      },
+      {
+        "from": "Pharse_1/Scraper/BarandBentch/Court_news/",
+        "to": "Pharse_1/Scraper/BarandBentch/Court_news/Sc.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/BarandBentch/Court_news/Data/",
+        "to": "Pharse_1/Scraper/BarandBentch/Court_news/Data/Raw_Data/"
+      },
+      {
+        "from": "Pharse_1/Scraper/BarandBentch/Court_news/Data/",
+        "to": "Pharse_1/Scraper/BarandBentch/Court_news/Data/SC_articles.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/BarandBentch/Court_news/Data/",
+        "to": "Pharse_1/Scraper/BarandBentch/Court_news/Data/logs/"
+      },
+      {
+        "from": "Pharse_1/Scraper/BarandBentch/Court_news/High_court's/",
+        "to": "Pharse_1/Scraper/BarandBentch/Court_news/High_court's/AllahabadHC.py"
+      },
+      {
         "from": "Pharse_1/Scraper/Data/",
         "to": "Pharse_1/Scraper/Data/Cleaned data/"
       },
       {
         "from": "Pharse_1/Scraper/Data/",
+        "to": "Pharse_1/Scraper/Data/Filter/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/",
+        "to": "Pharse_1/Scraper/Data/Processed/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/",
         "to": "Pharse_1/Scraper/Data/Raw_Data/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/",
+        "to": "Pharse_1/Scraper/Data/Script/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/",
+        "to": "Pharse_1/Scraper/Data/Structured/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/",
+        "to": "Pharse_1/Scraper/Data/logs/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Cleaned data/",
+        "to": "Pharse_1/Scraper/Data/Cleaned data/Cleaned_Sc_articles.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Filter/",
+        "to": "Pharse_1/Scraper/Data/Filter/Supreme_Court/"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Filter/Supreme_Court/",
+        "to": "Pharse_1/Scraper/Data/Filter/Supreme_Court/Final_training_corpus.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Filter/Supreme_Court/",
+        "to": "Pharse_1/Scraper/Data/Filter/Supreme_Court/Rejected.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Filter/Supreme_Court/",
+        "to": "Pharse_1/Scraper/Data/Filter/Supreme_Court/report.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Processed/",
+        "to": "Pharse_1/Scraper/Data/Processed/Phase14_Final_Training_Corpus.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Processed/",
+        "to": "Pharse_1/Scraper/Data/Processed/Phase14_Rejected.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Processed/",
+        "to": "Pharse_1/Scraper/Data/Processed/Phase14_Report.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Raw_Data/",
+        "to": "Pharse_1/Scraper/Data/Raw_Data/HighCourt News/"
       },
       {
         "from": "Pharse_1/Scraper/Data/Raw_Data/",
@@ -948,6 +1076,38 @@
       {
         "from": "Pharse_1/Scraper/Data/Raw_Data/",
         "to": "Pharse_1/Scraper/Data/Raw_Data/articles.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Raw_Data/HighCourt News/",
+        "to": "Pharse_1/Scraper/Data/Raw_Data/HighCourt News/AllahabadHC.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Script/",
+        "to": "Pharse_1/Scraper/Data/Script/Ai_pipelines.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Script/",
+        "to": "Pharse_1/Scraper/Data/Script/Chuck_SC.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Script/",
+        "to": "Pharse_1/Scraper/Data/Script/Fliter_Sc.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Script/",
+        "to": "Pharse_1/Scraper/Data/Script/SC_Cleaner.py"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Structured/",
+        "to": "Pharse_1/Scraper/Data/Structured/Rejected_SC_Blogs.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Structured/",
+        "to": "Pharse_1/Scraper/Data/Structured/SC_Blog_Report.json"
+      },
+      {
+        "from": "Pharse_1/Scraper/Data/Structured/",
+        "to": "Pharse_1/Scraper/Data/Structured/Structured_SC_Blogs.json"
       },
       {
         "from": "Pharse_1/Scraper/Live_Law/",
@@ -970,6 +1130,10 @@
         "to": "Pharse_1/Scraper/Live_Law/Data/Raw_Data/"
       },
       {
+        "from": "Pharse_1/Scraper/Live_Law/Data/",
+        "to": "Pharse_1/Scraper/Live_Law/Data/logs/"
+      },
+      {
         "from": "Pharse_1/Scraper/Live_Law/Data/Raw_Data/",
         "to": "Pharse_1/Scraper/Live_Law/Data/Raw_Data/SC_articles.json"
       },
@@ -980,6 +1144,10 @@
       {
         "from": "Pharse_1/Scraper/Live_Law/High Court/",
         "to": "Pharse_1/Scraper/Live_Law/High Court/__init__.py"
+      },
+      {
+        "from": "Pharse_1/TODO/",
+        "to": "Pharse_1/TODO/TODO.md"
       },
       {
         "from": "production/",
