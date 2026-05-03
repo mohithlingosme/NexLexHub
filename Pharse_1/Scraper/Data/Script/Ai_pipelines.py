@@ -1,461 +1,479 @@
-import json
+import os
 import re
+import json
+import time
+import sqlite3
 import hashlib
+import logging
 from pathlib import Path
-from datetime import datetime, timezone
-from collections import Counter
+from datetime import datetime
+from typing import List, Optional
+from slugify import slugify
+from tqdm import tqdm
+from bs4 import BeautifulSoup
+import ollama
+from pydantic import BaseModel, Field, ValidationError
 
 
-# =========================================================
+# =========================================
 # CONFIG
-# =========================================================
+# =========================================
+MODEL_NAME = "llama3.1"
+INPUT_FOLDER = "Pharse_1\Scraper\Data\Structured\Structured_SC_Blogs.json"
+DB_FILE = "nexlexhub_processed.db"
+SQL_DUMP_FILE = "nexlexhub_processed.sql"
+FAILED_LOG_FILE = "failed_logs.json"
+PROCESS_LOG = "ai_pipeline.log"
 
-INPUT_PATH = Path(
-    r"C:\Users\Admin\OneDrive\Documents\GitHub\NexLexHub\Pharse_1\Scraper\Data\Cleaned data\Cleaned_Sc_articles.json"
+MAX_RETRIES = 4
+BATCH_SIZE = 20
+TEMPERATURE = 0
+TOP_P = 0.1
+NUM_PREDICT = 7000
+REPEAT_PENALTY = 1.2
+MAX_CHUNK_SIZE = 12000
+
+
+# =========================================
+# LOGGING
+# =========================================
+logging.basicConfig(
+    filename=PROCESS_LOG,
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-OUTPUT_PATH = Path(
-    r"C:\Users\Admin\OneDrive\Documents\GitHub\NexLexHub\Pharse_1\Scraper\Data\Structured\Structured_SC_Blogs.json"
-)
 
-REJECTED_PATH = Path(
-    r"C:\Users\Admin\OneDrive\Documents\GitHub\NexLexHub\Pharse_1\Scraper\Data\Structured\Rejected_SC_Blogs.json"
-)
-
-REPORT_PATH = Path(
-    r"C:\Users\Admin\OneDrive\Documents\GitHub\NexLexHub\Pharse_1\Scraper\Data\Structured\SC_Blog_Report.json"
-)
-
-MIN_WORD_COUNT = 80
-
-
-# =========================================================
-# UTILITIES
-# =========================================================
-
-def normalize_text(text):
-    """Clean whitespace and formatting."""
-    if not text:
-        return ""
-
-    text = str(text)
-
-    replacements = {
-        "\n": " ",
-        "\r": " ",
-        "\t": " ",
-        "’": "'",
-        "“": '"',
-        "”": '"',
-        "–": "-",
-        "—": "-",
-        "₹": "Rs.",
-    }
-
-    for old, new in replacements.items():
-        text = text.replace(old, new)
-
-    text = re.sub(r'\s+', ' ', text)
-    text = re.sub(r'\.\.+', '.', text)
-
-    return text.strip()
+# =========================================
+# PYDANTIC SCHEMA
+# =========================================
+class LegalBlogSchema(BaseModel):
+    title: str = Field(
+        description="Exact case-specific SEO title"
+    )
+    introduction: str
+    facts: str
+    procedural_history: str
+    issues: List[str]
+    findings: str
+    principles: List[str]
+    statutes: List[str]
+    precedents: List[str]
+    final_ruling: str
+    significance: str
+    confidence_score: float
 
 
-def generate_hash(text):
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+# =========================================
+# DATABASE INIT
+# =========================================
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS legal_blogs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        source_hash TEXT UNIQUE,
+        source_file TEXT,
+        title TEXT,
+        slug TEXT,
+        introduction TEXT,
+        facts TEXT,
+        procedural_history TEXT,
+        issues TEXT,
+        findings TEXT,
+        principles TEXT,
+        statutes TEXT,
+        precedents TEXT,
+        final_ruling TEXT,
+        significance TEXT,
+        confidence_score REAL,
+        created_at TEXT
+    )
+    """)
+
+    conn.commit()
+    return conn
 
 
-def split_sentences(text):
-    return re.split(r'(?<=[.!?])\s+', text)
+# =========================================
+# FILE CLEANING
+# =========================================
+def clean_text(raw_text):
+    raw_text = re.sub(r'\s+', ' ', raw_text)
+    raw_text = re.sub(r'[^\x00-\x7F]+', ' ', raw_text)
+    return raw_text.strip()
 
 
-# =========================================================
-# FILTERING
-# =========================================================
+def extract_html_text(html_content):
+    soup = BeautifulSoup(html_content, "html.parser")
+    return soup.get_text(separator=" ")
 
-def reject_article(article):
-    """
-    Safe enterprise filtering without over-rejection
-    """
 
-    title = normalize_text(article.get("title", ""))
-    content = normalize_text(article.get("content", ""))
+# =========================================
+# FILE READER
+# =========================================
+def read_file(file_path):
+    ext = Path(file_path).suffix.lower()
 
-    if not title:
-        return True, "Missing title"
+    try:
+        with open(
+            file_path,
+            "r",
+            encoding="utf-8",
+            errors="ignore"
+        ) as f:
+            content = f.read()
 
-    if not content:
-        return True, "Missing content"
+        if ext == ".html":
+            content = extract_html_text(content)
 
-    word_count = article.get("word_count", 0)
+        elif ext == ".json":
+            content = json.dumps(
+                json.loads(content),
+                indent=2
+            )
 
-    if word_count == 0:
-        word_count = len(content.split())
+        return clean_text(content)
 
-    if word_count < MIN_WORD_COUNT:
-        return True, "Low word count"
+    except Exception as e:
+        logging.error(
+            f"Failed reading file {file_path}: {e}"
+        )
+        return None
 
-    bad_terms = [
-        "subscribe now",
-        "click here",
-        "advertisement",
-        "sponsored content"
+
+# =========================================
+# HASHING
+# =========================================
+def generate_hash(content):
+    return hashlib.sha256(
+        content.encode("utf-8")
+    ).hexdigest()
+
+
+# =========================================
+# CHUNKING
+# =========================================
+def chunk_text(text, max_size=MAX_CHUNK_SIZE):
+    return [
+        text[i:i + max_size]
+        for i in range(0, len(text), max_size)
     ]
 
-    lower_text = (title + " " + content).lower()
 
-    for term in bad_terms:
-        if term in lower_text:
-            return True, f"Promotional content: {term}"
-
-    return False, ""
-
-
-# =========================================================
-# EXTRACTION
-# =========================================================
-
-def extract_case_name(article):
-    refs = article.get("case_references", [])
-
-    valid_refs = [
-        ref for ref in refs
-        if " v. " in ref.lower() and len(ref) > 15
-    ]
-
-    return valid_refs[0] if valid_refs else "Unknown Case"
-
-
-def generate_headline(article):
-    title = normalize_text(article.get("title", ""))
-
-    if "supreme court" not in title.lower():
-        title = f"Supreme Court: {title}"
-
-    return title
-
-
-def generate_lead(article):
-    sentences = split_sentences(article["content"])
-    return normalize_text(" ".join(sentences[:3]))
-
-
-def generate_background(article):
-    sentences = split_sentences(article["content"])
-
-    if len(sentences) > 8:
-        return normalize_text(" ".join(sentences[3:8]))
-
-    return normalize_text(" ".join(sentences[3:]))
-
-
-def generate_conflict(article):
-    content = article["content"]
-
-    patterns = [
-        r'High Court.*?\.',
-        r'Magistrate.*?\.',
-        r'lower court.*?\.',
-        r'quashed.*?\.',
-        r'set aside.*?\.'
-    ]
-
-    findings = []
-
-    for pattern in patterns:
-        matches = re.findall(pattern, content, flags=re.IGNORECASE)
-        findings.extend(matches)
-
-    return normalize_text(" ".join(findings[:5]))
-
-
-def generate_analysis(article):
-    sentences = split_sentences(article["content"])
-
-    if len(sentences) > 20:
-        analysis = " ".join(sentences[8:20])
-    else:
-        analysis = " ".join(sentences[8:])
-
-    return normalize_text(analysis)
-
-
-def extract_precedents(article):
-    refs = article.get("case_references", [])
-    legal_entities = article.get("legal_entities", [])
-
-    precedents = []
-
-    for ref in refs:
-        if " v. " in ref.lower() and len(ref) > 15:
-            precedents.append(ref)
-
-    for entity in legal_entities:
-        if any(term in entity.lower() for term in [
-            "article", "bnss", "crpc", "constitution"
-        ]):
-            precedents.append(entity)
-
-    return sorted(list(set(precedents)))
-
-
-def generate_final_ruling(article):
-    sentences = split_sentences(article["content"])
-
-    if len(sentences) >= 5:
-        ruling = " ".join(sentences[-5:])
-    else:
-        ruling = article["content"]
-
-    return normalize_text(ruling)
-
-
-# =========================================================
-# LEGAL PRINCIPLE MAPPING
-# =========================================================
-
-def map_legal_principles(content):
-    principles = []
-
-    doctrine_map = {
-        "Investigation vs Trial Distinction": [
-            "investigation", "trial", "mini-trial"
-        ],
-        "Magistrate Gatekeeping Role": [
-            "magistrate", "section 156", "section 175"
-        ],
-        "High Court Quashing Limits": [
-            "high court", "quash", "482", "226"
-        ],
-        "Prima Facie Standard": [
-            "prima facie"
-        ],
-        "Bail Jurisprudence": [
-            "bail"
-        ],
-        "Corporate Criminal Liability": [
-            "shareholder", "corporate", "director"
-        ],
-        "Constitutional Rights": [
-            "article 14", "article 21", "fundamental rights"
-        ]
-    }
-
-    lower = content.lower()
-
-    for doctrine, keywords in doctrine_map.items():
-        if any(keyword in lower for keyword in keywords):
-            principles.append(doctrine)
-
-    return principles
-
-
-# =========================================================
-# BLOG BUILDING
-# =========================================================
-
-def build_structured_blog(article):
-    content = normalize_text(article["content"])
-
-    structured = {
-        "id": article.get("id"),
-        "url": article.get("url"),
-        "title": generate_headline(article),
-        "author": article.get("author", ""),
-        "source": article.get("source", ""),
-        "court": article.get("court", ""),
-        "date": article.get("date", ""),
-        "case_name": extract_case_name(article),
-
-        "lead_summary": generate_lead(article),
-
-        "background_context": generate_background(article),
-
-        "conflict_or_lower_court_error": generate_conflict(article),
-
-        "supreme_court_analysis": generate_analysis(article),
-
-        "precedents_and_authorities": extract_precedents(article),
-
-        "legal_principles": map_legal_principles(content),
-
-        "final_ruling": generate_final_ruling(article),
-
-        "original_categories": article.get("category_tags", []),
-
-        "seo_keywords": [
-            "Supreme Court",
-            "BNSS",
-            "CrPC",
-            "Indian Judiciary",
-            "Legal News",
-            article.get("court", "")
-        ],
-
-        "training_format": {
-            "instruction":
-                f"Summarize and analyze Supreme Court legal news: {article.get('title')}",
-
-            "input":
-                content,
-
-            "output": {
-                "headline": generate_headline(article),
-                "lead": generate_lead(article),
-                "background": generate_background(article),
-                "analysis": generate_analysis(article),
-                "precedents": extract_precedents(article),
-                "legal_principles": map_legal_principles(content),
-                "ruling": generate_final_ruling(article)
-            }
-        },
-
-        "processed_at":
-            datetime.now(timezone.utc).isoformat(),
-
-        "pipeline_version":
-            "nexlexhub_sc_pipeline_final_v1"
-    }
-
-    return structured
-
-
-# =========================================================
-# MAIN PIPELINE
-# =========================================================
-
-def process_pipeline():
-    print("=" * 70)
-    print("NexLexHub Supreme Court News Structuring Pipeline")
-    print("=" * 70)
-
-    if not INPUT_PATH.exists():
-        print("ERROR: Input file not found.")
-        return
-
-    with open(INPUT_PATH, "r", encoding="utf-8") as f:
-        articles = json.load(f)
-
-    accepted = []
-    rejected = []
-
-    seen_hashes = set()
-    seen_urls = set()
-
-    category_counter = Counter()
-
-    for idx, article in enumerate(articles, start=1):
+# =========================================
+# PROMPT ENGINEERING
+# =========================================
+def build_prompt(raw_text):
+    return f"""
+You are an elite Supreme Court legal editor,
+judicial analyst, and legal intelligence engine.
+
+TASK:
+Extract ONLY source-specific legal intelligence.
+
+STRICT RULES:
+- Output ONLY valid JSON
+- Follow schema EXACTLY
+- Use ONLY source material
+- NO generic summaries
+- NO broad court descriptions
+- NO fabricated facts
+- NO hallucinated precedents
+- NO invented statutes
+- Exact title
+- Exact facts
+- Exact procedural history
+- Exact issues
+- Exact statutes
+- Exact precedents
+- Exact findings
+- Exact final ruling
+- Exact legal significance
+- SEO-grade legal article quality
+- Law student digest style
+- If unavailable:
+  "Information not sufficiently available"
+
+QUALITY RULE:
+Generic titles like:
+"Supreme Court Cases"
+"Court Judgment"
+"Legal Summary"
+ARE INVALID.
+
+JSON SCHEMA:
+{json.dumps(LegalBlogSchema.model_json_schema(), indent=2)}
+
+SOURCE:
+{raw_text}
+"""
+
+
+# =========================================
+# OLLAMA EXTRACTION
+# =========================================
+def extract_blog_data(raw_text):
+    prompt = build_prompt(raw_text)
+
+    for attempt in range(MAX_RETRIES):
         try:
-            url = article.get("url", "")
-            content = normalize_text(article.get("content", ""))
+            response = ollama.chat(
+                model=MODEL_NAME,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a legal research "
+                            "and judicial publishing engine."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                format=LegalBlogSchema.model_json_schema(),
+                options={
+                    "temperature": TEMPERATURE,
+                    "top_p": TOP_P,
+                    "repeat_penalty": REPEAT_PENALTY,
+                    "num_predict": NUM_PREDICT
+                }
+            )
 
-            if not content:
-                rejected.append({
-                    "reason": "Empty content",
-                    "article": article
-                })
-                continue
+            parsed = LegalBlogSchema.model_validate_json(
+                response["message"]["content"]
+            )
 
-            if url in seen_urls:
-                rejected.append({
-                    "reason": "Duplicate URL",
-                    "article": article
-                })
-                continue
-
-            content_hash = generate_hash(content)
-
-            if content_hash in seen_hashes:
-                rejected.append({
-                    "reason": "Duplicate content",
-                    "article": article
-                })
-                continue
-
-            seen_urls.add(url)
-            seen_hashes.add(content_hash)
-
-            reject, reason = reject_article(article)
-
-            if reject:
-                print(f"REJECTED: {article.get('title', 'Unknown')} --> {reason}")
-
-                rejected.append({
-                    "reason": reason,
-                    "article": article
-                })
-                continue
-
-            structured_blog = build_structured_blog(article)
-
-            accepted.append(structured_blog)
-
-            print(f"ACCEPTED: {article.get('title', 'Unknown')}")
-
-            for cat in article.get("category_tags", []):
-                category_counter[cat] += 1
-
-            if idx % 25 == 0:
-                print(f"Processed {idx}/{len(articles)} articles...")
+            return parsed.model_dump()
 
         except Exception as e:
-            rejected.append({
-                "reason": str(e),
-                "article": article
+            logging.warning(
+                f"Ollama retry {attempt+1} failed: {e}"
+            )
+            time.sleep(3)
+
+    raise RuntimeError(
+        "Ollama extraction failed after retries."
+    )
+
+
+# =========================================
+# QUALITY VALIDATION
+# =========================================
+def validate_blog_quality(blog):
+    banned_titles = [
+        "Supreme Court Cases",
+        "Court Judgment",
+        "Legal Summary",
+        "Supreme Court"
+    ]
+
+    if blog["title"].strip() in banned_titles:
+        return False
+
+    if len(blog["issues"]) < 1:
+        return False
+
+    if len(blog["principles"]) < 2:
+        return False
+
+    if len(blog["statutes"]) < 1:
+        return False
+
+    if blog["confidence_score"] < 0.65:
+        return False
+
+    return True
+
+
+# =========================================
+# SQL INSERT
+# =========================================
+def insert_blog(conn, source_hash, source_file, blog):
+    slug = slugify(blog["title"])
+
+    conn.execute("""
+    INSERT OR IGNORE INTO legal_blogs (
+        source_hash,
+        source_file,
+        title,
+        slug,
+        introduction,
+        facts,
+        procedural_history,
+        issues,
+        findings,
+        principles,
+        statutes,
+        precedents,
+        final_ruling,
+        significance,
+        confidence_score,
+        created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        source_hash,
+        source_file,
+        blog["title"],
+        slug,
+        blog["introduction"],
+        blog["facts"],
+        blog["procedural_history"],
+        json.dumps(blog["issues"]),
+        blog["findings"],
+        json.dumps(blog["principles"]),
+        json.dumps(blog["statutes"]),
+        json.dumps(blog["precedents"]),
+        blog["final_ruling"],
+        blog["significance"],
+        blog["confidence_score"],
+        datetime.now().isoformat()
+    ))
+
+
+# =========================================
+# SQL EXPORT
+# =========================================
+def export_sql_dump():
+    conn = sqlite3.connect(DB_FILE)
+
+    with open(
+        SQL_DUMP_FILE,
+        "w",
+        encoding="utf-8"
+    ) as f:
+        for line in conn.iterdump():
+            f.write(f"{line}\n")
+
+    conn.close()
+
+
+# =========================================
+# MAIN BULK PROCESSOR
+# =========================================
+def process_bulk():
+    start_time = time.time()
+
+    conn = init_db()
+    failed_logs = []
+
+    all_files = []
+
+    for root, _, files in os.walk(INPUT_FOLDER):
+        for file in files:
+            if file.lower().endswith(
+                (".txt", ".md", ".json", ".html")
+            ):
+                all_files.append(
+                    os.path.join(root, file)
+                )
+
+    logging.info(
+        f"Discovered {len(all_files)} source files."
+    )
+
+    batch_counter = 0
+    processed_count = 0
+
+    for file_path in tqdm(all_files):
+        try:
+            raw_text = read_file(file_path)
+
+            if not raw_text:
+                continue
+
+            source_hash = generate_hash(raw_text)
+
+            existing = conn.execute(
+                "SELECT id FROM legal_blogs WHERE source_hash=?",
+                (source_hash,)
+            ).fetchone()
+
+            if existing:
+                continue
+
+            chunks = chunk_text(raw_text)
+
+            combined_results = []
+
+            for chunk in chunks:
+                result = extract_blog_data(chunk)
+
+                if validate_blog_quality(result):
+                    combined_results.append(result)
+
+            if not combined_results:
+                failed_logs.append({
+                    "file": file_path,
+                    "reason": "Validation failed"
+                })
+                continue
+
+            # Use highest confidence chunk
+            best_blog = max(
+                combined_results,
+                key=lambda x: x["confidence_score"]
+            )
+
+            insert_blog(
+                conn,
+                source_hash,
+                file_path,
+                best_blog
+            )
+
+            processed_count += 1
+            batch_counter += 1
+
+            if batch_counter % BATCH_SIZE == 0:
+                conn.commit()
+
+        except Exception as e:
+            failed_logs.append({
+                "file": file_path,
+                "reason": str(e)
             })
 
-    # =====================================================
-    # SAVE OUTPUTS
-    # =====================================================
+    conn.commit()
+    conn.close()
 
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    # Failed logs
+    with open(
+        FAILED_LOG_FILE,
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
+            failed_logs,
+            f,
+            indent=4
+        )
 
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(accepted, f, indent=4, ensure_ascii=False)
+    # SQL dump
+    export_sql_dump()
 
-    with open(REJECTED_PATH, "w", encoding="utf-8") as f:
-        json.dump(rejected, f, indent=4, ensure_ascii=False)
+    elapsed = round(
+        time.time() - start_time,
+        2
+    )
 
-    report = {
-        "total_articles": len(articles),
-        "accepted_articles": len(accepted),
-        "rejected_articles": len(rejected),
+    print(
+        f"SUCCESS: Processed {processed_count} blogs "
+        f"in {elapsed} seconds."
+    )
 
-        "acceptance_rate":
-            round((len(accepted) / len(articles)) * 100, 2)
-            if articles else 0,
-
-        "category_distribution":
-            dict(category_counter),
-
-        "generated_at":
-            datetime.now(timezone.utc).isoformat(),
-
-        "pipeline_version":
-            "nexlexhub_sc_pipeline_final_v1"
-    }
-
-    with open(REPORT_PATH, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=4, ensure_ascii=False)
-
-    # =====================================================
-    # FINAL REPORT
-    # =====================================================
-
-    print("=" * 70)
-    print("PIPELINE COMPLETE")
-    print(f"Accepted Articles : {len(accepted)}")
-    print(f"Rejected Articles : {len(rejected)}")
-    print(f"Acceptance Rate   : {report['acceptance_rate']}%")
-    print(f"Structured Output : {OUTPUT_PATH}")
-    print(f"Rejected Output   : {REJECTED_PATH}")
-    print(f"Report Output     : {REPORT_PATH}")
-    print("=" * 70)
+    logging.info(
+        f"Completed processing {processed_count} blogs "
+        f"in {elapsed} seconds."
+    )
 
 
-# =========================================================
-# ENTRY POINT
-# =========================================================
-
+# =========================================
+# EXECUTION
+# =========================================
 if __name__ == "__main__":
-    process_pipeline()
+    process_bulk()
