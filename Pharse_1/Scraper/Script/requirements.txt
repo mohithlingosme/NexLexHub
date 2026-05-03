@@ -1,0 +1,11 @@
+pydantic>=2.5
+ollama
+beautifulsoup4
+lxml
+html2text
+PyMySQL
+python-dotenv
+rich
+alembic
+pytest
+
