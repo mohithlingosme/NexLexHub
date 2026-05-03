@@ -1,0 +1,6 @@
+2026-05-03 14:20:10,330 - ERROR - Pipeline failed: Input file not found: input_data.json
+2026-05-03 14:21:52,456 - INFO - Ollama generation attempt 1
+2026-05-03 15:00:01,808 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-05-03 15:00:02,110 - INFO - Pipeline completed successfully in 2289.6s
+2026-05-03 15:13:54,892 - INFO - Discovered 0 source files.
+2026-05-03 15:13:54,957 - INFO - Completed processing 0 blogs in 0.09 seconds.
