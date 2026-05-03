@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """Generate a lightweight repo graph (Mermaid + JSON) for NexLexHub.
 
