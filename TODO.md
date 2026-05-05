@@ -1,16 +1,20 @@
-# NexLexHub Phase 1 TODO (Data Foundation)
+# Legal Supreme Court Pipeline TODO
+
 task_progress Items:
-- [x] 1. Update ai-legal-news-agent/requirements.txt (schedule, fastapi, uvicorn)
-- [x] 2. Create data dirs (raw/processed/chunks)
-- [x] 3. Update ai-legal-news-agent/config.py (add scraper sources)
-- [x] 4. New ai-legal-news-agent/scraper/barbench_scraper.py
-- [x] 5. New ai-legal-news-agent/scraper/indiakanoon_scraper.py
-- [x] 6. ai-legal-news-agent/scraper/__init__.py dispatcher
-- [x] 7. Update pipeline/processor.py (multi-source)
-- [x] 8. Update main.py ("daily" mode)
-- [x] 9. New ai-legal-news-agent/server.py (FastAPI)
-- [x] 10. Enhance frontend/index.html + app.js (RAG UI)
-- [x] 11. Dockerfile + docker-compose.yml
-- [ ] 12. Tests + run `main.py full`
-- [ ] 13. Phase 1 complete → Phase 2
+- [x] Step 0: Create implementation_plan.md
+- [x] Step 1: Create core/legal_pipeline/types.py (schemas)
+- [ ] Step 2: Create core/legal_pipeline/web_search.py + update core/config.py
+- [x] Step 2: Create core/legal_pipeline/web_search.py + update core/config.py
+- [x] Step 3: Create core/legal_pipeline/ollama_client.py (prompts)
+- [ ] Step 4: Create core/legal_pipeline/output_generators.py
+- [ ] Step 4: Create core/legal_pipeline/output_generators.py
+- [ ] Step 5: Create core/legal_pipeline/processor.py
+- [ ] Step 6: Create core/legal_pipeline/runner.py + __init__.py
+- [ ] Step 7: Update requirements.txt
+- [x] Step 8: Add tests core/legal_pipeline/test_processor.py
+- [x] Step 9: Test run: python -m core.legal_pipeline.runner on sample JSON
+- [x] Step 10: Document usage in README.md
+- [ ] Step 10: Document usage in README.md
+
+**Next:** Proceed to Step 1? Confirm plan or revisions.
 

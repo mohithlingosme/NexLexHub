@@ -1,8 +1,18 @@
-# Repo-level convenience requirements.
-# Prefer installing per-module deps directly:
-# - `pip install -r ai-legal-news-agent/requirements.txt`
-# - `pip install -r python-service/requirements.txt`
+# Core deps
+fastapi
+uvicorn[standard]
+pydantic
+httpx
+playwright
+dataclasses-json
 
--r ai-legal-news-agent/requirements.txt
--r python-service/requirements.txt
+# AI
+ollama  # Optional Python client
+faiss-cpu  # Vector store (future)
+chromadb  # Vector store alt (future)
+serper-api
+
+# Utils
+asyncio
+pathlib
 
