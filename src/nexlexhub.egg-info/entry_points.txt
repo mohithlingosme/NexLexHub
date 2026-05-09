@@ -1,0 +1,3 @@
+[console_scripts]
+nexlexhub-api = nexlexhub.api.main:run
+nexlexhub-seed = nexlexhub.scripts.seed_demo:main

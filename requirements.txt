@@ -1,8 +1,1 @@
-# Repo-level convenience requirements.
-# Prefer installing per-module deps directly:
-# - `pip install -r ai-legal-news-agent/requirements.txt`
-# - `pip install -r python-service/requirements.txt`
-
--r ai-legal-news-agent/requirements.txt
--r python-service/requirements.txt
-
+-e .[dev]

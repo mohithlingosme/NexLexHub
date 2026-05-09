@@ -1,0 +1,1 @@
+"""NexLexHub application package."""

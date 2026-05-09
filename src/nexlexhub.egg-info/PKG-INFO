@@ -1,0 +1,89 @@
+Metadata-Version: 2.4
+Name: nexlexhub
+Version: 2.0.0
+Summary: AI-powered legal intelligence and RAG platform.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: aiohttp>=3.10.10
+Requires-Dist: alembic>=1.13.2
+Requires-Dist: asyncpg>=0.30.0
+Requires-Dist: beautifulsoup4>=4.12.3
+Requires-Dist: celery[redis]>=5.4.0
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: greenlet>=3.1.1
+Requires-Dist: httpx>=0.27.2
+Requires-Dist: pgvector>=0.3.5
+Requires-Dist: psycopg[binary]>=3.2.3
+Requires-Dist: pydantic>=2.9.2
+Requires-Dist: pydantic-settings>=2.6.0
+Requires-Dist: pypdf>=5.1.0
+Requires-Dist: python-json-logger>=2.0.7
+Requires-Dist: python-multipart>=0.0.12
+Requires-Dist: redis>=5.1.1
+Requires-Dist: sqlalchemy>=2.0.36
+Requires-Dist: tenacity>=9.0.0
+Requires-Dist: uvicorn[standard]>=0.32.0
+Provides-Extra: dev
+Requires-Dist: mypy>=1.13.0; extra == "dev"
+Requires-Dist: pytest>=8.3.3; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.24.0; extra == "dev"
+Requires-Dist: ruff>=0.7.0; extra == "dev"
+
+# NexLexHub
+
+NexLexHub is now a legal intelligence and legal RAG platform. The runtime no longer depends on SQLite article stores or article-rewriting flows. The platform is organized around discovery metadata, official-source retrieval, citation-aware chunking, embeddings, semantic retrieval, knowledge graph views, and compliance-safe analysis.
+
+## Stack
+
+- FastAPI backend
+- PostgreSQL + pgvector
+- SQLAlchemy ORM + Alembic
+- Redis + Celery
+- Next.js frontend
+
+## Main capabilities
+
+- Metadata-only legal event discovery
+- Official judgment and gazette source normalization
+- Citation extraction and precedent linking
+- Semantic chunking and embedding generation
+- Hybrid retrieval and grounded legal analysis
+- Knowledge graph endpoints for cases, citations, courts, and precedents
+
+## Quick start
+
+```bash
+copy .env.example .env
+pip install -r requirements.txt
+docker compose up -d postgres redis
+alembic upgrade head
+nexlexhub-seed
+uvicorn nexlexhub.api.main:app --reload
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## API
+
+- `GET /health`
+- `POST /search`
+- `GET /cases`
+- `GET /citations`
+- `GET /precedents`
+- `POST /semantic-search`
+- `POST /legal-analysis`
+- `GET /timeline`
+- `GET /related-cases/{case_id}`
+- `GET /graph`
+
+All protected endpoints require `X-API-Key`.
+
+## Legacy compatibility
+
+The old scraper entrypoints still exist, but they now delegate to the discovery-engine architecture and emit metadata-only event records instead of full article bodies.
