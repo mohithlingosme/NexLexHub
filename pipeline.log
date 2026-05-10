@@ -1,9 +1,0 @@
-2026-05-09 21:07:37,204 | INFO | ============================================================
-2026-05-09 21:07:37,204 | INFO | NEXLEXHUB LEGAL PIPELINE STARTED
-2026-05-09 21:07:37,204 | INFO | ============================================================
-2026-05-09 21:07:37,226 | INFO | Database initialized.
-2026-05-09 21:07:37,232 | INFO | Loaded corpus with 17 entries.
-2026-05-09 21:12:14,532 | INFO | HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
-2026-05-09 21:12:14,551 | INFO | Inserted: Notify all airports: Supreme Court orders look-out notice against Satinder Singh Bhasin in Grand Venice case
-2026-05-09 21:14:24,757 | INFO | HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
-2026-05-09 21:14:24,770 | INFO | Inserted: Teesta Setalvad v. State of Gujarat
