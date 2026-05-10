@@ -3,15 +3,58 @@
 @tailwind utilities;
 
 :root {
-  --paper: #f5f0e1;
-  --ink: #16110d;
-  --accent: #0f5b4a;
-  --warm: #9b5c2e;
+  --shell: #060814;
+  --panel: rgba(10, 18, 32, 0.88);
+  --panel-strong: rgba(8, 14, 26, 0.94);
+  --card: rgba(255, 255, 255, 0.04);
+  --foreground: #edf2ff;
+  --muted: #90a0bf;
+  --accent: #0e7490;
+  --accent-strong: #14b8a6;
 }
 
 body {
   background:
-    radial-gradient(circle at top left, rgba(155, 92, 46, 0.18), transparent 28%),
-    linear-gradient(180deg, #faf6eb, var(--paper));
-  color: var(--ink);
+    radial-gradient(circle at 0% 0%, rgba(20, 184, 166, 0.18), transparent 24%),
+    radial-gradient(circle at 100% 0%, rgba(14, 116, 144, 0.22), transparent 28%),
+    linear-gradient(180deg, #050816, #09111f 42%, #060814);
+  color: var(--foreground);
+}
+
+@layer utilities {
+  .bg-shell {
+    background-color: var(--shell);
+  }
+
+  .bg-panel {
+    background-color: var(--panel);
+  }
+
+  .bg-panel-strong {
+    background-color: var(--panel-strong);
+  }
+
+  .bg-card {
+    background-color: var(--card);
+  }
+
+  .text-shell-foreground {
+    color: var(--foreground);
+  }
+
+  .text-shell-muted {
+    color: var(--muted);
+  }
+
+  .bg-accent {
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  }
+
+  .shadow-panel {
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.35);
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 30px rgba(20, 184, 166, 0.18);
+  }
 }

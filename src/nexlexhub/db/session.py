@@ -3,6 +3,7 @@ from collections.abc import AsyncIterator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from nexlexhub.core.config import get_settings
+from nexlexhub.db.base import Base
 
 
 settings = get_settings()
@@ -13,3 +14,8 @@ SessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSe
 async def get_db() -> AsyncIterator[AsyncSession]:
     async with SessionLocal() as session:
         yield session
+
+
+async def init_models() -> None:
+    async with engine.begin() as connection:
+        await connection.run_sync(Base.metadata.create_all)

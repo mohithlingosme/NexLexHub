@@ -28,6 +28,7 @@ src/nexlexhub/db/__init__.py
 src/nexlexhub/db/base.py
 src/nexlexhub/db/models.py
 src/nexlexhub/db/session.py
+src/nexlexhub/db/types.py
 src/nexlexhub/domain/__init__.py
 src/nexlexhub/domain/types.py
 src/nexlexhub/graph/__init__.py

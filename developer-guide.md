@@ -1,6 +1,26 @@
 # Developer Guide
 
-- Runtime code lives in `src/nexlexhub`.
-- Database changes must ship through `alembic/versions`.
-- Legacy scraper entrypoints under `Pharse_1/` are compatibility wrappers and should delegate into `src/nexlexhub/scrapers`.
-- Use `pytest`, `ruff check .`, and `mypy src` before shipping changes.
+## Code ownership map
+
+- API: `src/nexlexhub/api/`
+- Auth and settings: `src/nexlexhub/core/`
+- ORM + sessions: `src/nexlexhub/db/`
+- Retrieval pipeline: `src/nexlexhub/rag/`
+- Processing pipeline: `src/nexlexhub/processing/`
+- Official source retrieval: `src/nexlexhub/official_sources/`
+- Discovery engines: `src/nexlexhub/scrapers/`
+- Frontend workspace: `frontend/app/`
+
+## Rules
+
+- Keep legacy wrappers under `Pharse_1/` functional; they should delegate into `src/nexlexhub/scrapers`.
+- Ship schema changes through `alembic/versions/`.
+- Prefer Postgres-compatible types in production, but preserve SQLite compatibility for tests.
+- Do not reintroduce SQLite article stores or full publisher-body retention.
+
+## Standard checks
+
+- `pytest -q`
+- `python -m ruff check .`
+- `cd frontend && npm run lint`
+- `cd frontend && npm run build`

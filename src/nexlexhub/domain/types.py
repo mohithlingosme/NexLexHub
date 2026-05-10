@@ -14,6 +14,7 @@ class DiscoveryRecord:
     snippet: str
     entities: list[str] = field(default_factory=list)
     official_source_found: bool = False
+    event_hash: str | None = None
 
 
 @dataclass

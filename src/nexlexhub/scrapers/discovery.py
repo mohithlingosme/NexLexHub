@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import logging
 import re
 from datetime import datetime, timezone
@@ -85,6 +86,7 @@ class DiscoveryEngine:
                             snippet=headline[:240],
                             entities=self._entities(headline),
                             official_source_found=False,
+                            event_hash=hashlib.sha256(f"{self.publisher}|{href}|{headline}".encode("utf-8")).hexdigest(),
                         )
                     )
         clustered: dict[str, DiscoveryRecord] = {}

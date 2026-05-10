@@ -11,19 +11,27 @@ class Settings(BaseSettings):
     app_name: str = "NexLexHub"
     env: str = "dev"
     api_key: str = "dev-api-key"
+    jwt_secret: str = "dev-jwt-secret"
+    jwt_issuer: str = "nexlexhub"
+    access_token_expiry_minutes: int = 60
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/nexlexhub"
     sync_database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/nexlexhub"
     redis_url: str = "redis://localhost:6379/0"
     allowed_keys: str = "dev-api-key:admin"
     embedding_provider: str = "hash"
-    embedding_dimension: int = 16
+    embedding_dimension: int = 1024
     rate_limit_per_minute: int = 120
     enable_demo_seed: bool = True
+    auto_init_db: bool = True
     log_level: str = "INFO"
     official_source_dir: str = "data/official_sources"
     discovery_output_dir: str = "data/discovery"
     user_agent: str = "NexLexHubBot/2.0 (+https://example.invalid/legal-intelligence)"
     cors_origins: list[str] = Field(default_factory=lambda: ["*"])
+
+    @property
+    def is_sqlite(self) -> bool:
+        return self.database_url.startswith("sqlite")
 
     def key_roles(self) -> Dict[str, str]:
         mapping: Dict[str, str] = {}

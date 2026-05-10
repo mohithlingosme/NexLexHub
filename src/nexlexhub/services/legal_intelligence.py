@@ -7,7 +7,7 @@ from nexlexhub.agents.compliance_agent import evaluate as compliance_evaluate
 from nexlexhub.agents.editorial_agent import synthesize
 from nexlexhub.agents.verification_agent import verify
 from nexlexhub.compliance.attribution_engine import build_attribution
-from nexlexhub.db.models import Case, Citation, Court, LegalEvent, Precedent
+from nexlexhub.db.models import AIConversation, Alert, Case, Citation, Court, LegalEvent, Precedent, Statute
 from nexlexhub.graph.graph_builder import build_graph
 from nexlexhub.rag.citation_grounding import ground_answer
 from nexlexhub.rag.retriever import fetch_case_citations, semantic_retrieve
@@ -18,6 +18,13 @@ async def search_cases(session: AsyncSession, query: str) -> list[Case]:
         Case.title.ilike(f"%{query}%") | Case.summary.ilike(f"%{query}%") | Case.citation.ilike(f"%{query}%")
     )
     return list((await session.execute(stmt)).scalars().all())
+
+
+async def search_statutes(session: AsyncSession, query: str) -> list[Statute]:
+    stmt = select(Statute)
+    if query:
+        stmt = stmt.where(Statute.name.ilike(f"%{query}%") | Statute.citation.ilike(f"%{query}%"))
+    return list((await session.execute(stmt.order_by(Statute.name.asc()))).scalars().all())
 
 
 async def timeline(session: AsyncSession) -> list[dict]:
@@ -73,8 +80,34 @@ async def precedents_index(session: AsyncSession) -> list[dict]:
 async def summary_counts(session: AsyncSession) -> dict[str, int]:
     case_count = await session.scalar(select(func.count()).select_from(Case)) or 0
     event_count = await session.scalar(select(func.count()).select_from(LegalEvent)) or 0
-    return {"cases": case_count, "events": event_count}
+    statute_count = await session.scalar(select(func.count()).select_from(Statute)) or 0
+    alert_count = await session.scalar(select(func.count()).select_from(Alert)) or 0
+    return {"cases": case_count, "events": event_count, "statutes": statute_count, "alerts": alert_count}
 
 
 async def graph_snapshot(session: AsyncSession) -> dict:
     return await build_graph(session)
+
+
+async def alerts_index(session: AsyncSession) -> list[Alert]:
+    return list((await session.execute(select(Alert).order_by(Alert.created_at.desc()))).scalars().all())
+
+
+async def conversations_index(session: AsyncSession) -> list[AIConversation]:
+    return list((await session.execute(select(AIConversation).order_by(AIConversation.created_at.desc()))).scalars().all())
+
+
+async def create_conversation(
+    session: AsyncSession, query: str, answer: str, sources: list[dict], title: str | None = None
+) -> AIConversation:
+    conversation = AIConversation(
+        title=title or query[:80],
+        query=query,
+        answer=answer,
+        sources_json=sources,
+        metadata_json={"streamed": True},
+    )
+    session.add(conversation)
+    await session.commit()
+    await session.refresh(conversation)
+    return conversation
